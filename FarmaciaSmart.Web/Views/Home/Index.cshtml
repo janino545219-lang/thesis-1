@@ -1,92 +1,321 @@
 @using FarmaciaSmart.Web.Models.ViewModels.Home
 @model StaffHomeViewModel
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Staff Operations Dashboard - Farmacia San Antonio";
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/analytics.css" asp-append-version="true" />
+    <style>
+        .staff-header {
+            background: #ffffff;
+            border: 1px solid #E5E7EB;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(23, 32, 51, 0.04);
+        }
+        .staff-metric-card {
+            background: #ffffff;
+            border: 1px solid #E5E7EB;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 2px 10px rgba(23, 32, 51, 0.04);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .staff-metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(23, 32, 51, 0.08);
+        }
+        .staff-metric-card.highlight {
+            background: #B91C2B;
+            border-color: #B91C2B;
+            color: #ffffff;
+        }
+        .staff-metric-card.highlight .stat-label {
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .staff-metric-card.highlight .stat-value {
+            color: #ffffff;
+        }
+        .staff-metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            margin-bottom: 0.75rem;
+        }
+        .quick-action-btn {
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+    </style>
 }
 
-<div class="analytics-page">
-    <h2 class="mb-4">Welcome, @Model.DisplayName!</h2>
-
-    @if (Model.BusinessOverview is not null)
-    {
-        <h6 class="text-muted mb-3">Business Overview <small>(this month)</small></h6>
-        <div class="row g-3 mb-4">
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="stat-card-primary">
-                    <div class="stat-label">Total Sales</div>
-                    <div class="stat-value">@Model.BusinessOverview.TotalSalesThisMonth.ToString("N2")</div>
-                    <a asp-controller="Analytics" asp-action="Index" class="text-decoration-none" style="color:rgba(255,255,255,0.85)">View full Analytics &rarr;</a>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="stat-label">Transactions</div>
-                    <div class="stat-value">@Model.BusinessOverview.TransactionsThisMonth</div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="stat-label">Avg Order Value</div>
-                    <div class="stat-value">@Model.BusinessOverview.AvgOrderValueThisMonth.ToString("N2")</div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="stat-label">New Customers</div>
-                    <div class="stat-value">@Model.BusinessOverview.NewCustomersThisMonth</div>
-                </div>
-            </div>
+<div class="analytics-page py-2">
+    <!-- Header Banner -->
+    <div class="staff-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <span class="badge mb-2" style="background-color: var(--brand-primary); color: #fff;">Staff Portal</span>
+            <h2 class="fw-bold mb-1 text-navy">Welcome back, @Model.DisplayName!</h2>
+            <p class="text-secondary small mb-0">Multi-branch pharmacy monitoring, operations, and inventory synchronization.</p>
         </div>
-    }
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-controller="POS" asp-action="Index" class="btn btn-action-blue px-3 py-2">
+                <span>&#128181;</span> Launch POS
+            </a>
+            <a asp-controller="CustomerOrder" asp-action="Index" class="btn btn-outline-primary px-3 py-2">
+                <span>&#128717;</span> View Pre-Orders
+            </a>
+        </div>
+    </div>
 
-    <div class="row g-3">
-        @if (Model.TodaysSalesCount.HasValue)
+    <!-- Live System Overview Cards -->
+    <div class="row g-3 mb-4">
+        @if (Model.TotalProductsCount.HasValue)
         {
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="analytics-card h-100">
-                    <h6 class="mb-2">Today's Sales</h6>
-                    <div class="stat-value mb-1">@Model.TodaysSalesTotal!.Value.ToString("N2")</div>
-                    <p class="text-muted small mb-3">@Model.TodaysSalesCount transaction(s) today</p>
-                    <a asp-controller="POS" asp-action="Index" class="btn btn-sm btn-primary">Go to POS</a>
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="staff-metric-card">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="stat-label text-muted small fw-bold text-uppercase">Total Catalog Products</span>
+                        <div class="staff-metric-icon" style="background: #edf2fd; color: #326BE8;">&#128137;</div>
+                    </div>
+                    <div class="stat-value fs-2 fw-bold text-navy mb-2">@Model.TotalProductsCount</div>
+                    <a asp-controller="Product" asp-action="Index" class="small text-decoration-none fw-semibold" style="color: #326BE8">Manage catalog &rarr;</a>
                 </div>
             </div>
         }
+
+        @if (Model.TotalBranchesCount.HasValue)
+        {
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="staff-metric-card">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="stat-label text-muted small fw-bold text-uppercase">Active Branches</span>
+                        <div class="staff-metric-icon" style="background: #fdf2f2; color: #B91C2B;">&#127970;</div>
+                    </div>
+                    <div class="stat-value fs-2 fw-bold text-navy mb-2">@Model.TotalBranchesCount</div>
+                    <a asp-controller="Branch" asp-action="Index" class="small text-decoration-none fw-semibold" style="color: #B91C2B">View branches &rarr;</a>
+                </div>
+            </div>
+        }
+
+        @if (Model.PendingOrdersCount.HasValue)
+        {
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="staff-metric-card">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="stat-label text-muted small fw-bold text-uppercase">Pending Pre-Orders</span>
+                        <div class="staff-metric-icon" style="background: #fef3c7; color: #d97706;">&#128230;</div>
+                    </div>
+                    <div class="stat-value fs-2 fw-bold text-navy mb-2">@Model.PendingOrdersCount</div>
+                    <a asp-controller="CustomerOrder" asp-action="Index" class="small text-decoration-none fw-semibold" style="color: #d97706">Fulfill orders &rarr;</a>
+                </div>
+            </div>
+        }
+
+        @if (Model.TodaysSalesTotal.HasValue)
+        {
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="staff-metric-card highlight">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="stat-label small fw-bold text-uppercase">Today's Sales Total</span>
+                        <span class="fs-5">&#128181;</span>
+                    </div>
+                    <div class="stat-value fs-2 fw-bold mb-2">&#8369;@Model.TodaysSalesTotal.Value.ToString("N2")</div>
+                    <div class="small" style="color: rgba(255,255,255,0.85)">@Model.TodaysSalesCount transaction(s) today</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Alert Cards & Operations Counters -->
+    <div class="row g-3 mb-4">
         @if (Model.LowStockCount.HasValue)
         {
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="analytics-card h-100">
-                    <h6 class="mb-2">Inventory Alerts</h6>
-                    <div class="stat-value mb-1">@Model.LowStockCount</div>
-                    <p class="text-muted small mb-3">low stock &middot; @Model.ExpiringSoonCount expiring within 30 days</p>
-                    <a asp-controller="Inventory" asp-action="Index" class="btn btn-sm btn-primary">Go to Inventory</a>
+                <div class="card p-3 border-danger-subtle h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-danger">Low Stock Alert</span>
+                    </div>
+                    <div class="stat-value fs-3 fw-bold text-danger mb-1">@Model.LowStockCount</div>
+                    <p class="text-muted small mb-3">Product(s) below threshold</p>
+                    <a asp-controller="Inventory" asp-action="Index" class="btn btn-sm btn-outline-danger w-100">Review Inventory</a>
                 </div>
             </div>
         }
+
+        @if (Model.ExpiringSoonCount.HasValue)
+        {
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card p-3 border-warning-subtle h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-warning text-dark">Expiry Warning</span>
+                    </div>
+                    <div class="stat-value fs-3 fw-bold text-warning mb-1">@Model.ExpiringSoonCount</div>
+                    <p class="text-muted small mb-3">Batch(es) expiring in 30 days</p>
+                    <a asp-controller="Inventory" asp-action="Index" class="btn btn-sm btn-outline-warning w-100">Inspect Batches</a>
+                </div>
+            </div>
+        }
+
         @if (Model.PendingReviewsCount.HasValue)
         {
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="analytics-card h-100">
-                    <h6 class="mb-2">Pending Recommendation Reviews</h6>
-                    <div class="stat-value mb-1">@Model.PendingReviewsCount</div>
-                    <p class="text-muted small mb-3">awaiting pharmacist review</p>
-                    <a asp-controller="RecommendationReview" asp-action="Index" class="btn btn-sm btn-primary">Review Now</a>
+                <div class="card p-3 border-primary-subtle h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge" style="background: #326BE8; color: #fff;">Pharmacist Review</span>
+                    </div>
+                    <div class="stat-value fs-3 fw-bold mb-1 text-navy">@Model.PendingReviewsCount</div>
+                    <p class="text-muted small mb-3">OTC recommendation(s) awaiting review</p>
+                    <a asp-controller="RecommendationReview" asp-action="Index" class="btn btn-sm btn-outline-primary w-100">Perform Review</a>
                 </div>
             </div>
         }
+
         @if (Model.ClockedInTodayCount.HasValue)
         {
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="analytics-card h-100">
-                    <h6 class="mb-2">HR &amp; Payroll</h6>
-                    <div class="stat-value mb-1">@Model.ClockedInTodayCount</div>
-                    <p class="text-muted small mb-3">clocked in today &middot; @Model.DraftPayrollCount draft payroll(s)</p>
-                    <a asp-controller="Attendance" asp-action="Index" class="btn btn-sm btn-primary">Go to Attendance</a>
+                <div class="card p-3 h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-success">HR &amp; Staff</span>
+                    </div>
+                    <div class="stat-value fs-3 fw-bold text-navy mb-1">@Model.ClockedInTodayCount</div>
+                    <p class="text-muted small mb-3">Employee(s) clocked in today</p>
+                    <a asp-controller="Attendance" asp-action="Index" class="btn btn-sm btn-outline-success w-100">Attendance Log</a>
                 </div>
             </div>
         }
+    </div>
+
+    <!-- Quick Action Bar -->
+    <div class="card p-3 mb-4">
+        <h6 class="fw-bold text-navy mb-3">Quick Actions</h6>
+        <div class="row g-2">
+            <div class="col-6 col-md-3">
+                <a asp-controller="POS" asp-action="Index" class="btn btn-outline-secondary w-100 py-2 small">
+                    <span>&#128181;</span> Point of Sale
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Inventory" asp-action="StockIn" class="btn btn-outline-secondary w-100 py-2 small">
+                    <span>&#128230;</span> Stock In New Batch
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Product" asp-action="Create" class="btn btn-outline-secondary w-100 py-2 small">
+                    <span>&#10133;</span> Add New Product
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Report" asp-action="SalesSummary" class="btn btn-outline-secondary w-100 py-2 small">
+                    <span>&#128196;</span> Sales Reports
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables: Recent Transactions & Inventory Activity -->
+    <div class="row g-3">
+        <!-- Recent Transactions -->
+        <div class="col-12 col-lg-6">
+            <div class="analytics-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold text-navy mb-0">Recent Completed Sales</h6>
+                    <a asp-controller="POS" asp-action="Index" class="small text-decoration-none">Open POS</a>
+                </div>
+                @if (Model.RecentTransactions is null || Model.RecentTransactions.Count == 0)
+                {
+                    <p class="text-muted small py-3 mb-0">No completed sales recorded today.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Receipt #</th>
+                                    <th>Branch</th>
+                                    <th>Cashier</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var sale in Model.RecentTransactions)
+                            {
+                                <tr>
+                                    <td><span class="badge bg-light text-navy border">@sale.ReceiptNumber</span></td>
+                                    <td>@sale.Branch.Name</td>
+                                    <td class="small text-muted">@(sale.CashierUser?.FirstName ?? "Cashier")</td>
+                                    <td class="text-end fw-bold text-navy">&#8369;@sale.TotalAmount.ToString("N2")</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Inventory Activity -->
+        <div class="col-12 col-lg-6">
+            <div class="analytics-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold text-navy mb-0">Live Inventory Movements</h6>
+                    <a asp-controller="Inventory" asp-action="Index" class="small text-decoration-none">View All Inventory</a>
+                </div>
+                @if (Model.RecentInventoryActivity is null || Model.RecentInventoryActivity.Count == 0)
+                {
+                    <p class="text-muted small py-3 mb-0">No recent inventory movements recorded.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Branch</th>
+                                    <th>Type</th>
+                                    <th class="text-end">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var movement in Model.RecentInventoryActivity)
+                            {
+                                var typeBadge = movement.TransactionType switch
+                                {
+                                    InventoryTransactionType.Purchase => "bg-success text-white",
+                                    InventoryTransactionType.Sale => "bg-info text-white",
+                                    InventoryTransactionType.Damaged => "bg-danger text-white",
+                                    InventoryTransactionType.Adjustment => "bg-warning text-dark",
+                                    _ => "bg-secondary text-white"
+                                };
+                                <tr>
+                                    <td class="fw-semibold text-navy">@movement.Product.Name</td>
+                                    <td><span class="badge bg-light text-navy border">@movement.Branch.Name</span></td>
+                                    <td><span class="badge @typeBadge">@movement.TransactionType</span></td>
+                                    <td class="text-end fw-bold">@(movement.Quantity > 0 ? "+" + movement.Quantity : movement.Quantity)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>

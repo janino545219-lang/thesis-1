@@ -1,67 +1,154 @@
 @model FarmaciaSmart.Web.Models.ViewModels.Account.LoginViewModel
 @{
-    ViewData["Title"] = "Customer Login";
+    ViewData["Title"] = "Customer Login - Farmacia San Antonio";
     Layout = "_AuthLayout";
 }
 
 <div class="auth-card">
+    <!-- LEFT SIDE: Pharmacy Visual & Feature List -->
     <div class="auth-visual">
         <div class="auth-brand-badge">
             <partial name="_Logo" view-data='@(new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 36 }, { "href", "/" } })' />
         </div>
-        <div class="auth-visual-highlights">
-            <strong>Your pharmacy, online.</strong>
-            <ul>
-                <li>&#10003; AI-assisted OTC &amp; supplement suggestions, reviewed by our pharmacists</li>
-                <li>&#10003; Pre-order online, pick up at your preferred branch</li>
-                <li>&#10003; Track your recommendation and order history anytime</li>
+        <div class="auth-visual-content">
+            <h2 class="auth-visual-heading">Your Pharmacy, Online.</h2>
+            <ul class="auth-feature-list">
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Browse pharmacy products</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>View branch availability</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Track preorder requests</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Access your account securely</span>
+                </li>
             </ul>
+            <div class="auth-visual-tagline">
+                Licensed Pharmacist Verification &middot; Multi-Branch Convenience
+            </div>
         </div>
     </div>
+
+    <!-- RIGHT SIDE: Customer Login Form -->
     <div class="auth-form-side">
-        <div class="auth-audience-switch">
-            <span class="active">Customer</span>
-            <span class="divider">&middot;</span>
-            <a asp-area="" asp-controller="Account" asp-action="Login">Staff</a>
-        </div>
-        <div class="text-center">
-            <div class="auth-tabs">
-                <span class="auth-tab active">Login</span>
-                <a class="auth-tab" asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">Sign Up</a>
-            </div>
-        </div>
-        <div class="auth-heading">
-            <h2>Welcome back</h2>
-            <p>Please enter your details to sign in.</p>
+        <!-- Account-Type Selector -->
+        <div class="auth-audience-switch" role="group" aria-label="Account Type">
+            <span class="auth-audience-pill active">Customer</span>
+            <a class="auth-audience-pill" asp-area="" asp-controller="Account" asp-action="Login">Staff</a>
         </div>
 
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <form asp-area="CustomerPortal" asp-controller="Account" asp-action="Login" method="post">
+        <!-- Login / Sign Up Tabs -->
+        <div class="auth-tabs" role="tablist">
+            <span class="auth-tab active" role="tab" aria-selected="true">Login</span>
+            <a class="auth-tab" asp-area="CustomerPortal" asp-controller="Account" asp-action="Register" role="tab" aria-selected="false">Sign Up</a>
+        </div>
+
+        <div class="auth-heading">
+            <h2>Welcome Back</h2>
+            <p>Please enter your email and password to sign in.</p>
+        </div>
+
+        @if (TempData["Success"] is string successMsg)
+        {
+            <div class="alert alert-success auth-alert d-flex align-items-center gap-2" role="alert">
+                <span>&#10003;</span>
+                <div>@successMsg</div>
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger auth-alert" role="alert"></div>
+
+        <form asp-area="CustomerPortal" asp-controller="Account" asp-action="Login" method="post" id="customerLoginForm" novalidate>
             <input type="hidden" asp-for="ReturnUrl" />
+            
             <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" autocomplete="username" placeholder="Enter your email address" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="Email" class="form-label">Email Address</label>
+                <input asp-for="Email" 
+                       type="email"
+                       class="form-control" 
+                       autocomplete="email" 
+                       placeholder="name@example.com" 
+                       required />
+                <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
+
             <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="Enter your password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+                <label asp-for="Password" class="form-label">Password</label>
+                <div class="auth-password-wrapper">
+                    <input asp-for="Password" 
+                           type="password" 
+                           class="form-control" 
+                           id="customerPasswordInput"
+                           autocomplete="current-password" 
+                           placeholder="Enter your password" 
+                           required />
+                    <button type="button" 
+                            class="btn-toggle-password" 
+                            id="togglePasswordBtn" 
+                            aria-label="Toggle password visibility">
+                        <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
             </div>
-            <div class="form-check mb-3">
-                <input asp-for="RememberMe" class="form-check-input" />
-                <label asp-for="RememberMe" class="form-check-label"></label>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check mb-0">
+                    <input asp-for="RememberMe" class="form-check-input" id="customerRememberMe" />
+                    <label asp-for="RememberMe" class="form-check-label small" for="customerRememberMe">Remember me</label>
+                </div>
             </div>
-            <button type="submit" class="btn auth-submit-btn text-white w-100">Login</button>
+
+            <button type="submit" class="btn auth-submit-btn w-100" id="loginSubmitBtn">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span class="btn-text">Sign In</span>
+            </button>
         </form>
 
         <p class="auth-footer-link">
             Don't have an account?
-            <a asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">Sign up</a>
+            <a asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">Create customer account</a>
         </p>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            'use strict';
+            // Show/hide password
+            var toggleBtn = document.getElementById('togglePasswordBtn');
+            var passwordInput = document.getElementById('customerPasswordInput');
+            if (toggleBtn && passwordInput) {
+                toggleBtn.addEventListener('click', function () {
+                    var isPassword = passwordInput.getAttribute('type') === 'password';
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                });
+            }
+
+            // Submit loading indicator & prevent duplicate submission
+            var form = document.getElementById('customerLoginForm');
+            var submitBtn = document.getElementById('loginSubmitBtn');
+            if (form && submitBtn) {
+                form.addEventListener('submit', function (e) {
+                    if (form.checkValidity && !form.checkValidity()) {
+                        return;
+                    }
+                    if ($(form).valid && !$(form).valid()) {
+                        return;
+                    }
+                    submitBtn.classList.add('is-submitting');
+                    submitBtn.setAttribute('disabled', 'disabled');
+                });
+            }
+        })();
+    </script>
 }

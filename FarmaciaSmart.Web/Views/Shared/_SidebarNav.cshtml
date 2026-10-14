@@ -45,24 +45,24 @@
 
 @if (isCustomer)
 {
-    <a class="app-sidebar-brand" asp-area="CustomerPortal" asp-controller="Dashboard" asp-action="Index">
-        <span>&#128138;</span> FarmaciaSmart
-    </a>
+    <div class="app-sidebar-brand">
+        <partial name="_Logo" view-data='@(new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 32 }, { "href", "/CustomerPortal/Dashboard" } })' />
+    </div>
 }
 else
 {
-    <a class="app-sidebar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-        <span>&#128138;</span> FarmaciaSmart
-    </a>
+    <div class="app-sidebar-brand">
+        <partial name="_Logo" view-data='@(new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 32 }, { "href", "/" } })' />
+    </div>
 }
 
 @if (isAuthenticated)
 {
     <div class="app-sidebar-profile">
         <div class="app-sidebar-profile-avatar">@initials</div>
-        <div>
-            <div class="app-sidebar-profile-name">@fullName</div>
-            <div class="app-sidebar-profile-role">@primaryRole</div>
+        <div class="min-w-0">
+            <div class="app-sidebar-profile-name text-truncate">@fullName</div>
+            <div class="app-sidebar-profile-role text-truncate">@primaryRole</div>
         </div>
     </div>
 }
@@ -80,9 +80,9 @@ else
         <li><a class="nav-link @ActiveClass("CustomerPortal", "Profile", "Index")" asp-area="CustomerPortal" asp-controller="Profile" asp-action="Index"><span class="nav-icon">&#128100;</span> My Profile</a></li>
 
         <li class="app-sidebar-section">Shop</li>
-        <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Index")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Index"><span class="nav-icon">&#128722;</span> Shop</a></li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Index")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Index"><span class="nav-icon">&#128722;</span> Shop Products</a></li>
         <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Cart")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Cart"><span class="nav-icon">&#128179;</span> My Cart</a></li>
-        <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Orders")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Orders"><span class="nav-icon">&#128230;</span> My Orders</a></li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Orders")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Orders"><span class="nav-icon">&#128230;</span> My Preorders</a></li>
 
         <li class="app-sidebar-section">AI Recommendations</li>
         <li><a class="nav-link @ActiveClass("CustomerPortal", "Recommendation", "Index")" asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Index"><span class="nav-icon">&#129502;</span> Ask AI</a></li>

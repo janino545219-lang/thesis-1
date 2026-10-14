@@ -1,4 +1,55 @@
+@* Professional multi-column footer for Farmacia San Antonio *@
+
 <footer class="landing-footer">
-    &copy; @DateTime.UtcNow.Year &ndash; FarmaciaSmart &ndash;
-    <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <div class="landing-footer-top">
+        <div class="landing-footer-container">
+            <div class="row g-4 justify-content-between">
+                <div class="col-12 col-md-4">
+                    <div class="mb-3">
+                        <partial name="_Logo" view-data='@(new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 38 }, { "href", "/" } })' />
+                    </div>
+                    <p class="landing-footer-desc">
+                        Farmacia San Antonio is dedicated to providing high-quality pharmaceutical care, convenient medicine pre-ordering, and licensed pharmacist consultation.
+                    </p>
+                </div>
+                <div class="col-6 col-md-2">
+                    <h5 class="landing-footer-title">Platform</h5>
+                    <ul class="landing-footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#privacy-security">Safety &amp; Privacy</a></li>
+                        <li><a asp-area="CustomerPortal" asp-controller="Shop" asp-action="Index">Product Catalog</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-2">
+                    <h5 class="landing-footer-title">Access</h5>
+                    <ul class="landing-footer-links">
+                        <li><a asp-area="CustomerPortal" asp-controller="Account" asp-action="Login">Customer Portal</a></li>
+                        <li><a asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">Create Account</a></li>
+                        <li><a asp-area="" asp-controller="Account" asp-action="Login">Staff Sign In</a></li>
+                    </ul>
+                </div>
+                <div class="col-12 col-md-3">
+                    <h5 class="landing-footer-title">Legal &amp; Clinical</h5>
+                    <ul class="landing-footer-links">
+                        <li><a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                        <li><a href="#privacy-security">Terms &amp; Conditions</a></li>
+                        <li><span class="text-muted small">Licensed Pharmacist Supervision Required for all In-Store Dispensations</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="landing-footer-bottom">
+        <div class="landing-footer-container d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                &copy; @DateTime.UtcNow.Year Farmacia San Antonio. All rights reserved.
+            </div>
+            <div class="d-flex gap-3">
+                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-muted text-decoration-none small">Privacy Policy</a>
+                <span class="text-muted">&middot;</span>
+                <a href="#privacy-security" class="text-muted text-decoration-none small">Terms of Service</a>
+            </div>
+        </div>
+    </div>
 </footer>

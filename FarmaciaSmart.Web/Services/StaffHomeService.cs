@@ -17,9 +17,53 @@ public class StaffHomeService(
     {
         var model = new StaffHomeViewModel();
 
+        var isStaffUser = isAdministrator || isCashier || isInventoryStaff || isPharmacist || isHrPayroll;
+
         if (isAdministrator)
         {
             model.BusinessOverview = await analyticsService.GetSummaryAsync(cancellationToken);
+        }
+
+        if (isStaffUser)
+        {
+            model.TotalProductsCount = await context.Products.CountAsync(p => p.IsActive, cancellationToken);
+            model.TotalBranchesCount = await context.Branches.CountAsync(b => b.IsActive, cancellationToken);
+            model.PendingOrdersCount = await context.CustomerOrders.CountAsync(o => o.Status == CustomerOrderStatus.Pending, cancellationToken);
+
+            var transactionsQuery = context.Sales
+                .Include(s => s.Branch)
+                .Include(s => s.CashierUser)
+                .Where(s => s.Status == SaleStatus.Completed);
+
+            if (branchId.HasValue)
+            {
+                transactionsQuery = transactionsQuery.Where(s => s.BranchId == branchId.Value);
+            }
+
+            model.RecentTransactions = await transactionsQuery
+                .OrderByDescending(s => s.SaleDate)
+                .Take(5)
+                .ToListAsync(cancellationToken);
+
+            var inventoryQuery = context.InventoryTransactions
+                .Include(t => t.Product)
+                .Include(t => t.Branch);
+
+            if (branchId.HasValue)
+            {
+                model.RecentInventoryActivity = await inventoryQuery
+                    .Where(t => t.BranchId == branchId.Value)
+                    .OrderByDescending(t => t.Timestamp)
+                    .Take(5)
+                    .ToListAsync(cancellationToken);
+            }
+            else
+            {
+                model.RecentInventoryActivity = await inventoryQuery
+                    .OrderByDescending(t => t.Timestamp)
+                    .Take(5)
+                    .ToListAsync(cancellationToken);
+            }
         }
 
         if (isAdministrator || isCashier)

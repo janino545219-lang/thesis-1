@@ -3,21 +3,27 @@
 @{
     var iconMap = new Dictionary<int, string>
     {
-        { 1, "message-circle" },
-        { 2, "sparkles" },
-        { 3, "clipboard-check" }
+        { 1, "check-circle" },
+        { 2, "cart" },
+        { 3, "clipboard-check" },
+        { 4, "shield-check" },
+        { 5, "building" }
     };
 }
 
 <section class="landing-how-it-works" id="how-it-works" aria-labelledby="how-heading">
-    <h2 id="how-heading" class="landing-section-heading reveal">How It Works</h2>
+    <div class="text-center mb-4">
+        <div class="landing-section-badge">Simple 5-Step Process</div>
+        <h2 id="how-heading" class="landing-section-heading reveal">How It Works</h2>
+        <p class="landing-section-subtitle mx-auto reveal">From medicine pre-ordering to seamless in-store counter collection.</p>
+    </div>
     <div class="landing-steps">
         @foreach (var step in Model)
         {
             var iconName = iconMap.GetValueOrDefault(step.Number, "check-circle");
             var isLast = step.Number == Model.Count;
 
-            <div class="landing-step reveal" style="--reveal-delay: @((step.Number - 1) * 150)ms">
+            <div class="landing-step reveal" style="--reveal-delay: @((step.Number - 1) * 100)ms">
                 <div class="landing-step-number" aria-hidden="true">@step.Number</div>
                 <div class="landing-step-icon-box" role="img" aria-label="@step.Title icon">
                     <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", iconName } })' />

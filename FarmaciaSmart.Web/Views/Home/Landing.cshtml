@@ -1,7 +1,7 @@
 @using FarmaciaSmart.Web.Services.Interfaces
 @inject ILandingContentService ContentService
 @{
-    ViewData["Title"] = "FarmaciaSmart";
+    ViewData["Title"] = "Farmacia San Antonio - Your Trusted Pharmacy, Made Smarter";
     Layout = "_LandingLayout";
 
     var trustItems = ContentService.GetTrustItems();
@@ -9,11 +9,11 @@
     var steps = ContentService.GetSteps();
 }
 
-<header class="landing-navbar-wrap">
+<header class="landing-navbar-wrap" id="landingNavbarWrap">
     <nav class="landing-navbar" aria-label="Landing page navigation">
         <div class="landing-brand">
             <span class="landing-logo-full">
-                @await Html.PartialAsync("_Logo", new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 44 }, { "href", "/" } })
+                @await Html.PartialAsync("_Logo", new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 42 }, { "href", "/" } })
             </span>
             <span class="landing-logo-icon">
                 @await Html.PartialAsync("_Logo", new ViewDataDictionary(ViewData) { { "variant", "icon" }, { "height", 36 }, { "href", "/" } })
@@ -22,6 +22,7 @@
         <div class="landing-nav-links">
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
+            <a href="#privacy-security">Privacy &amp; Safety</a>
             <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
         <div class="landing-nav-actions">
@@ -36,6 +37,7 @@
     @await Component.InvokeAsync("TrustBar", new { items = trustItems })
     @await Component.InvokeAsync("FeatureGrid", new { items = features })
     @await Component.InvokeAsync("HowItWorks", new { items = steps })
+    <partial name="_LandingPrivacySecurity" />
     @await Component.InvokeAsync("DisclaimerBanner")
 </main>
 

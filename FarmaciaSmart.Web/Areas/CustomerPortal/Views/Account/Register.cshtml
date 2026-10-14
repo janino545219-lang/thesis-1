@@ -1,90 +1,237 @@
 @model FarmaciaSmart.Web.Areas.CustomerPortal.Models.ViewModels.CustomerRegisterViewModel
 @{
-    ViewData["Title"] = "Customer Registration";
+    ViewData["Title"] = "Customer Registration - Farmacia San Antonio";
     Layout = "_AuthLayout";
 }
 
 <div class="auth-card">
+    <!-- LEFT SIDE: Pharmacy Visual & Benefits -->
     <div class="auth-visual">
         <div class="auth-brand-badge">
             <partial name="_Logo" view-data='@(new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 36 }, { "href", "/" } })' />
         </div>
-        <div class="auth-visual-highlights">
-            <strong>Your pharmacy, online.</strong>
-            <ul>
-                <li>&#10003; AI-assisted OTC &amp; supplement suggestions, reviewed by our pharmacists</li>
-                <li>&#10003; Pre-order online, pick up at your preferred branch</li>
-                <li>&#10003; Track your recommendation and order history anytime</li>
+        <div class="auth-visual-content">
+            <h2 class="auth-visual-heading">Join Farmacia San Antonio</h2>
+            <ul class="auth-feature-list">
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Browse pharmacy products</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>View branch availability</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Track preorder requests</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Access your account securely</span>
+                </li>
             </ul>
+            <div class="auth-visual-tagline">
+                Personalized Pre-Orders &middot; Pharmacist-Approved Healthcare Guidance
+            </div>
         </div>
     </div>
+
+    <!-- RIGHT SIDE: Registration Form -->
     <div class="auth-form-side">
-        <div class="auth-audience-switch">
-            <span class="active">Customer</span>
-            <span class="divider">&middot;</span>
-            <a asp-area="" asp-controller="Account" asp-action="Login">Staff</a>
-        </div>
-        <div class="text-center">
-            <div class="auth-tabs">
-                <a class="auth-tab" asp-area="CustomerPortal" asp-controller="Account" asp-action="Login">Login</a>
-                <span class="auth-tab active">Sign Up</span>
-            </div>
-        </div>
-        <div class="auth-heading">
-            <h2>Create an account</h2>
-            <p>Please enter your details to create an account.</p>
+        <!-- Account-Type Selector -->
+        <div class="auth-audience-switch" role="group" aria-label="Account Type">
+            <span class="auth-audience-pill active">Customer</span>
+            <a class="auth-audience-pill" asp-area="" asp-controller="Account" asp-action="Login">Staff</a>
         </div>
 
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <form asp-area="CustomerPortal" asp-controller="Account" asp-action="Register" method="post">
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="FirstName" class="form-label"></label>
-                    <input asp-for="FirstName" class="form-control" />
-                    <span asp-validation-for="FirstName" class="text-danger"></span>
+        <!-- Login / Sign Up Tabs -->
+        <div class="auth-tabs" role="tablist">
+            <a class="auth-tab" asp-area="CustomerPortal" asp-controller="Account" asp-action="Login" role="tab" aria-selected="false">Login</a>
+            <span class="auth-tab active" role="tab" aria-selected="true">Sign Up</span>
+        </div>
+
+        <div class="auth-heading">
+            <h2>Create Your Account</h2>
+            <p>Fill out the details below to start ordering online.</p>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger auth-alert" role="alert"></div>
+
+        <form asp-area="CustomerPortal" asp-controller="Account" asp-action="Register" method="post" id="customerRegisterForm" novalidate>
+            <!-- First Name and Last Name Side by Side -->
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="FirstName" class="form-label">First Name</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="Juan" required />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="LastName" class="form-label"></label>
-                    <input asp-for="LastName" class="form-control" />
-                    <span asp-validation-for="LastName" class="text-danger"></span>
+                <div class="col-12 col-md-6">
+                    <label asp-for="LastName" class="form-label">Last Name</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Dela Cruz" required />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
                 </div>
             </div>
+
+            <!-- Email Address -->
             <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" autocomplete="username" placeholder="Enter your email address" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="Email" class="form-label">Email Address</label>
+                <input asp-for="Email" 
+                       type="email" 
+                       class="form-control" 
+                       autocomplete="email" 
+                       placeholder="juan.delacruz@example.com" 
+                       required />
+                <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
+
+            <!-- Contact Number -->
             <div class="mb-3">
-                <label asp-for="ContactNumber" class="form-label"></label>
-                <input asp-for="ContactNumber" class="form-control" />
-                <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                <label asp-for="ContactNumber" class="form-label">Contact Number</label>
+                <input asp-for="ContactNumber" 
+                       type="tel" 
+                       class="form-control" 
+                       placeholder="+63 912 345 6789" />
+                <span asp-validation-for="ContactNumber" class="text-danger small"></span>
             </div>
+
+            <!-- Preferred Pharmacy Branch -->
             <div class="mb-3">
-                <label asp-for="PreferredBranchId" class="form-label"></label>
+                <label asp-for="PreferredBranchId" class="form-label">Preferred Pharmacy Branch</label>
                 <select asp-for="PreferredBranchId" class="form-select" asp-items="@(new SelectList(Model.Branches, "Id", "Name"))">
-                    <option value="">-- No preference --</option>
+                    <option value="">-- Select preferred pickup branch --</option>
                 </select>
+                <span asp-validation-for="PreferredBranchId" class="text-danger small"></span>
             </div>
+
+            <!-- Password with Show/Hide Toggle -->
             <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" autocomplete="new-password" placeholder="Enter your password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+                <label asp-for="Password" class="form-label">Password</label>
+                <div class="auth-password-wrapper">
+                    <input asp-for="Password" 
+                           type="password" 
+                           class="form-control" 
+                           id="regPasswordInput"
+                           autocomplete="new-password" 
+                           placeholder="Minimum 8 characters" 
+                           required />
+                    <button type="button" 
+                            class="btn-toggle-password" 
+                            id="toggleRegPasswordBtn" 
+                            aria-label="Toggle password visibility">
+                        <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
             </div>
+
+            <!-- Confirm Password with Show/Hide Toggle -->
             <div class="mb-3">
-                <label asp-for="ConfirmPassword" class="form-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" placeholder="Confirm your password" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                <div class="auth-password-wrapper">
+                    <input asp-for="ConfirmPassword" 
+                           type="password" 
+                           class="form-control" 
+                           id="regConfirmPasswordInput"
+                           autocomplete="new-password" 
+                           placeholder="Re-enter your password" 
+                           required />
+                    <button type="button" 
+                            class="btn-toggle-password" 
+                            id="toggleRegConfirmPasswordBtn" 
+                            aria-label="Toggle confirm password visibility">
+                        <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                    </button>
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
             </div>
-            <button type="submit" class="btn auth-submit-btn text-white w-100">Create an account</button>
+
+            <!-- Password Requirements helper -->
+            <div class="auth-pwd-requirements">
+                <strong>Password Requirements:</strong>
+                <ul>
+                    <li>At least 8 characters in length</li>
+                    <li>Both passwords must match exactly</li>
+                </ul>
+            </div>
+
+            <!-- Terms and Privacy Agreement -->
+            <div class="form-check mb-4">
+                <input asp-for="AgreeToTerms" class="form-check-input" id="agreeToTermsCheck" />
+                <label asp-for="AgreeToTerms" class="form-check-label small" for="agreeToTermsCheck">
+                    I agree to the <a asp-area="" asp-controller="Home" asp-action="Privacy" target="_blank">Terms of Service</a> and <a asp-area="" asp-controller="Home" asp-action="Privacy" target="_blank">Privacy Policy</a>
+                </label>
+                <div>
+                    <span asp-validation-for="AgreeToTerms" class="text-danger small" id="agreeToTermsError"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn auth-submit-btn w-100" id="regSubmitBtn">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span class="btn-text">Create Account</span>
+            </button>
         </form>
 
         <p class="auth-footer-link">
             Already have an account?
-            <a asp-area="CustomerPortal" asp-controller="Account" asp-action="Login">Sign in</a>
+            <a asp-area="CustomerPortal" asp-controller="Account" asp-action="Login">Sign in here</a>
         </p>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            'use strict';
+            // Password toggle helper
+            function attachPasswordToggle(btnId, inputId) {
+                var btn = document.getElementById(btnId);
+                var input = document.getElementById(inputId);
+                if (btn && input) {
+                    btn.addEventListener('click', function () {
+                        var isPassword = input.getAttribute('type') === 'password';
+                        input.setAttribute('type', isPassword ? 'text' : 'password');
+                    });
+                }
+            }
+
+            attachPasswordToggle('toggleRegPasswordBtn', 'regPasswordInput');
+            attachPasswordToggle('toggleRegConfirmPasswordBtn', 'regConfirmPasswordInput');
+
+            // Duplicate submission prevention & loading indicator
+            var form = document.getElementById('customerRegisterForm');
+            var submitBtn = document.getElementById('regSubmitBtn');
+            var termsCheck = document.getElementById('agreeToTermsCheck');
+            var termsError = document.getElementById('agreeToTermsError');
+
+            if (termsCheck && termsError) {
+                termsCheck.addEventListener('change', function () {
+                    if (termsCheck.checked) {
+                        termsError.textContent = '';
+                    }
+                });
+            }
+
+            if (form && submitBtn) {
+                form.addEventListener('submit', function (e) {
+                    if (termsCheck && !termsCheck.checked) {
+                        e.preventDefault();
+                        if (termsError) {
+                            termsError.textContent = 'You must agree to the Terms and Privacy Policy.';
+                        }
+                        return false;
+                    }
+
+                    if (window.jQuery && $(form).valid && !$(form).valid()) {
+                        return;
+                    }
+
+                    setTimeout(function () {
+                        submitBtn.classList.add('is-submitting');
+                        submitBtn.setAttribute('disabled', 'disabled');
+                    }, 50);
+                });
+            }
+        })();
+    </script>
 }

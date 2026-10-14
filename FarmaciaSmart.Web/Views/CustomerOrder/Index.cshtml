@@ -1,53 +1,133 @@
 @using FarmaciaSmart.Web.Models.Entities
 @model List<CustomerOrder>
 @{
-    ViewData["Title"] = "Customer Pre-Orders";
+    ViewData["Title"] = "Customer Pre-Orders - Farmacia San Antonio";
+    var pendingCount = Model.Count(o => o.Status == CustomerOrderStatus.Pending);
+    var pendingTotal = Model.Where(o => o.Status == CustomerOrderStatus.Pending).Sum(o => o.TotalAmount);
 }
 
-<h2>Customer Pre-Orders (Pending Pickup)</h2>
-
-@if (TempData["Success"] is string success)
-{
-    <div class="alert alert-success">@success</div>
-}
-@if (TempData["Error"] is string error)
-{
-    <div class="alert alert-danger">@error</div>
-}
-
-@if (Model.Count == 0)
-{
-    <p class="text-muted">No pending customer orders.</p>
-}
-else
-{
-    <div class="table-responsive">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Order #</th>
-                <th>Customer</th>
-                <th>Branch</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Placed</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var order in Model)
-        {
-            <tr>
-                <td>@order.OrderNumber</td>
-                <td>@order.Customer.User.FirstName @order.Customer.User.LastName</td>
-                <td>@order.Branch.Name</td>
-                <td>@order.Items.Sum(i => i.Quantity)</td>
-                <td>@order.TotalAmount.ToString("N2")</td>
-                <td>@order.CreatedAt.ToString("g")</td>
-                <td><a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-secondary">View</a></td>
-            </tr>
-        }
-        </tbody>
-    </table>
+<div class="py-2">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge" style="background-color: var(--brand-primary); color: #fff;">In-Store Counter Operations</span>
+                <span class="badge bg-light text-navy border">Pre-Order Fulfillment</span>
+            </div>
+            <h2 class="fw-bold mb-1 text-navy">Customer Pre-Orders Queue</h2>
+            <p class="text-secondary small mb-0">Verify branch stock and fulfill customer orders when they arrive for in-store pickup and payment.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="POS" asp-action="Index" class="btn btn-action-blue px-3 py-2 fw-semibold">
+                <span>&#128181;</span> Launch POS Register
+            </a>
+        </div>
     </div>
-}
+
+    <!-- Counters -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4">
+            <div class="card p-3 shadow-sm border-0 bg-white">
+                <span class="text-muted small fw-bold text-uppercase">Orders Pending Pickup</span>
+                <div class="fs-2 fw-bold text-navy mt-1">@pendingCount</div>
+                <div class="text-warning small fw-semibold">Ready for customer collection</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="card p-3 shadow-sm border-0 bg-white">
+                <span class="text-muted small fw-bold text-uppercase">Pending Total Value</span>
+                <div class="fs-2 fw-bold text-navy mt-1">&#8369;@pendingTotal.ToString("N2")</div>
+                <div class="text-muted small">Receivable upon POS completion</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card p-3 shadow-sm border-0 bg-white">
+                <span class="text-muted small fw-bold text-uppercase">Workflow Notice</span>
+                <div class="small text-secondary mt-1">
+                    Preorders reserve products without prematurely decrementing stock until paid via the POS register.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] is string success)
+    {
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+            <span>&#10003;</span>
+            <div>@success</div>
+        </div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger d-flex align-items-center gap-2 mb-4" role="alert">
+            <span>&#9888;</span>
+            <div>@error</div>
+        </div>
+    }
+
+    <!-- Pre-Orders Table Card -->
+    <div class="card p-0 overflow-hidden shadow-sm">
+        <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold text-navy mb-0">Active Pre-Orders (@Model.Count)</h6>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="text-center py-5">
+                <div class="fs-1 text-success mb-2">&#9989;</div>
+                <h6 class="fw-bold text-navy mb-1">No Orders Awaiting Pickup</h6>
+                <p class="text-muted small mb-0">All customer pre-orders have been fulfilled or cancelled.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer Name</th>
+                            <th>Branch</th>
+                            <th class="text-center">Items</th>
+                            <th class="text-end">Total</th>
+                            <th>Placed At</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-bold font-monospace text-navy">@order.OrderNumber</span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-navy">@order.Customer.User.FirstName @order.Customer.User.LastName</div>
+                                <div class="text-muted small">@order.Customer.User.Email &middot; @(order.Customer.ContactNumber ?? "No phone")</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-navy border">@order.Branch.Name</span>
+                            </td>
+                            <td class="text-center">
+                                @order.Items.Sum(i => i.Quantity)
+                            </td>
+                            <td class="text-end fw-bold text-navy">
+                                &#8369;@order.TotalAmount.ToString("N2")
+                            </td>
+                            <td>
+                                <div class="small fw-semibold text-navy">@order.CreatedAt.ToString("MMM d, yyyy")</div>
+                                <div class="small text-muted">@order.CreatedAt.ToString("hh:mm tt")</div>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-action-blue px-3">
+                                    Fulfill / View &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

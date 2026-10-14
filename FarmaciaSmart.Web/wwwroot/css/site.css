@@ -1,31 +1,159 @@
+/* =============================================================
+   site.css — Global Theme Variables & Utilities
+   Farmacia San Antonio - Modern Healthcare Theme
+   ============================================================= */
+
+:root {
+    /* Primary brand colors */
+    --brand-primary: #B91C2B;       /* Pharmacy Red */
+    --brand-primary-hover: #9b1724;
+    --brand-primary-light: #fdf2f2;
+    --brand-navy: #172033;          /* Dark Navy Text / Chrome */
+    --brand-blue: #326BE8;          /* Primary Blue for Actions */
+    --brand-blue-hover: #2554bd;
+    --brand-blue-light: #ebf1fe;
+    --brand-green: #239B80;         /* Success Green */
+    --brand-green-hover: #1c7e68;
+    --brand-green-light: #edf8f5;
+    --brand-bg: #F5F7FB;            /* Application Background */
+    --brand-surface: #FFFFFF;
+    --brand-text-secondary: #697386;
+    --brand-border: #E5E7EB;
+    --brand-border-focus: #326BE8;
+
+    /* Radius & Shadows */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-pill: 9999px;
+    --shadow-sm: 0 1px 3px rgba(23, 32, 51, 0.05);
+    --shadow-md: 0 4px 16px rgba(23, 32, 51, 0.07);
+    --shadow-lg: 0 10px 30px rgba(23, 32, 51, 0.10);
+    --transition-fast: 0.15s ease-in-out;
+    --transition-normal: 0.25s ease-in-out;
+
+    /* Bootstrap Overrides */
+    --bs-primary: #B91C2B;
+    --bs-primary-rgb: 185, 28, 43;
+    --bs-secondary: #697386;
+    --bs-success: #239B80;
+    --bs-info: #326BE8;
+    --bs-body-bg: #F5F7FB;
+    --bs-body-color: #172033;
+    --bs-border-color: #E5E7EB;
+    --bs-link-color: #326BE8;
+    --bs-link-hover-color: #2554bd;
+}
+
 html {
-  font-size: 14px;
+    font-size: 15px;
+    scroll-behavior: smooth;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #2f6fed;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--brand-bg);
+    color: var(--brand-navy);
+    -webkit-font-smoothing: antialiased;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Accessible focus outlines */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    outline: none;
+    border-color: var(--brand-blue);
+    box-shadow: 0 0 0 3px rgba(50, 107, 232, 0.22);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* Modern Rounded Buttons */
+.btn {
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.btn-primary {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: #fff;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--brand-primary-hover);
+    border-color: var(--brand-primary-hover);
+    color: #fff;
+}
+
+.btn-action-blue {
+    background-color: var(--brand-blue);
+    border-color: var(--brand-blue);
+    color: #fff;
+}
+.btn-action-blue:hover, .btn-action-blue:focus {
+    background-color: var(--brand-blue-hover);
+    border-color: var(--brand-blue-hover);
+    color: #fff;
+}
+
+.btn-success {
+    background-color: var(--brand-green);
+    border-color: var(--brand-green);
+}
+.btn-success:hover, .btn-success:focus {
+    background-color: var(--brand-green-hover);
+    border-color: var(--brand-green-hover);
+}
+
+/* Clean Cards */
+.card, .stat-card, .analytics-card {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--brand-border);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+}
+
+/* Form Controls */
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 1px solid var(--brand-border);
+    padding: 0.625rem 0.875rem;
+    color: var(--brand-navy);
+    background-color: #fff;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-navy);
+    margin-bottom: 0.35rem;
+}
+
+/* Badges */
+.badge {
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    padding: 0.35em 0.75em;
+}
+
+.badge.bg-success {
+    background-color: var(--brand-green) !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--brand-primary) !important;
+}
+
+.badge.bg-info {
+    background-color: var(--brand-blue) !important;
+    color: #fff !important;
 }

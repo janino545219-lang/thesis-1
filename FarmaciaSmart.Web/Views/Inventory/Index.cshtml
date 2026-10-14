@@ -1,81 +1,248 @@
 @using FarmaciaSmart.Web.Models.ViewModels.Inventories
 @model List<StockRowViewModel>
 @{
-    ViewData["Title"] = "Inventory";
+    ViewData["Title"] = "Multi-Branch Inventory - Farmacia San Antonio";
+    var totalItems = Model.Count;
+    var lowStockCount = Model.Count(r => r.Inventory.QuantityOnHand <= r.Inventory.Product.LowStockThreshold);
+    var expiringCount = Model.Count(r => r.NearestExpiration.HasValue && r.NearestExpiration.Value.Date <= DateTime.Today.AddDays(30) && r.NearestExpiration.Value.Date >= DateTime.Today);
+    var expiredCount = Model.Count(r => r.NearestExpiration.HasValue && r.NearestExpiration.Value.Date < DateTime.Today);
+    var okCount = totalItems - lowStockCount;
 }
 
-<h2>Inventory</h2>
+<div class="py-2">
+    <!-- Page Header & Action Bar -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge" style="background-color: var(--brand-primary); color: #fff;">Multi-Branch Inventory</span>
+                <span class="badge bg-light text-navy border">Real-Time Sync</span>
+            </div>
+            <h2 class="fw-bold mb-1 text-navy">Centralized Inventory Control</h2>
+            <p class="text-secondary small mb-0">Monitor stock levels, batch shelf-life, and multi-branch movements across Farmacia San Antonio.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-action="StockIn" class="btn btn-action-blue px-3 py-2 fw-semibold">
+                <span>&#10133;</span> Stock In Batch
+            </a>
+            <a asp-action="Adjust" class="btn btn-outline-secondary px-3 py-2">
+                Adjust Stock
+            </a>
+            <a asp-action="Transfer" class="btn btn-outline-secondary px-3 py-2">
+                Transfer Stock
+            </a>
+            <a asp-action="History" class="btn btn-outline-secondary px-3 py-2">
+                Transaction History
+            </a>
+        </div>
+    </div>
 
-@if (TempData["Success"] is string success)
-{
-    <div class="alert alert-success">@success</div>
-}
+    <!-- Inventory Alerts & KPI Counters -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-white h-100">
+                <span class="text-muted small fw-bold text-uppercase">Total Monitored Items</span>
+                <div class="fs-2 fw-bold text-navy mt-1">@totalItems</div>
+                <div class="text-muted small">Across all active branches</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-white h-100">
+                <span class="text-muted small fw-bold text-uppercase">Optimal Stock</span>
+                <div class="fs-2 fw-bold text-success mt-1">@okCount</div>
+                <div class="text-muted small">Above safety thresholds</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-white h-100">
+                <span class="text-muted small fw-bold text-uppercase">Low-Stock Warnings</span>
+                <div class="fs-2 fw-bold text-danger mt-1">@lowStockCount</div>
+                <div class="text-danger small fw-semibold">Requires replenishment</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-white h-100">
+                <span class="text-muted small fw-bold text-uppercase">Expiring Soon / Expired</span>
+                <div class="fs-2 fw-bold text-warning mt-1">@(expiringCount + expiredCount)</div>
+                <div class="text-muted small">@expiringCount in 30 days &middot; @expiredCount expired</div>
+            </div>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="StockIn" class="btn btn-primary">Stock In</a>
-    <a asp-action="Adjust" class="btn btn-outline-primary">Adjust Stock</a>
-    <a asp-action="Transfer" class="btn btn-outline-primary">Transfer Stock</a>
-    <a asp-action="ReportDamaged" class="btn btn-outline-danger">Report Damaged</a>
-    <a asp-action="DamagedItems" class="btn btn-outline-secondary">Damaged Items</a>
-    <a asp-action="Return" class="btn btn-outline-warning">Process Return</a>
-    <a asp-action="Returns" class="btn btn-outline-secondary">Returns</a>
-    <a asp-action="History" class="btn btn-outline-secondary">Transaction History</a>
-</p>
-
-<div class="table-responsive">
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Branch</th>
-            <th>Product</th>
-            <th>On Hand</th>
-            <th>Low Stock Threshold</th>
-            <th>Stock Status</th>
-            <th>Nearest Expiration</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var row in Model)
+    @if (TempData["Success"] is string success)
     {
-        var inventory = row.Inventory;
-        var isLowStock = inventory.QuantityOnHand <= inventory.Product.LowStockThreshold;
-        var isExpired = row.NearestExpiration.HasValue && row.NearestExpiration.Value.Date < DateTime.Today;
-        var isExpiringSoon = row.NearestExpiration.HasValue && !isExpired && row.NearestExpiration.Value.Date <= DateTime.Today.AddDays(30);
-        <tr>
-            <td>@inventory.Branch.Name</td>
-            <td>@inventory.Product.Name</td>
-            <td>@inventory.QuantityOnHand</td>
-            <td>@inventory.Product.LowStockThreshold</td>
-            <td>
-                @if (isLowStock)
-                {
-                    <span class="badge bg-danger">Low Stock</span>
-                }
-                else
-                {
-                    <span class="badge bg-success">OK</span>
-                }
-            </td>
-            <td>
-                @if (row.NearestExpiration.HasValue)
-                {
-                    @row.NearestExpiration.Value.ToString("d")
-                    @if (isExpired)
-                    {
-                        <span class="badge bg-danger ms-1">Expired</span>
-                    }
-                    else if (isExpiringSoon)
-                    {
-                        <span class="badge bg-warning text-dark ms-1">Expiring Soon</span>
-                    }
-                }
-                else
-                {
-                    <span class="text-muted">&mdash;</span>
-                }
-            </td>
-        </tr>
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+            <span>&#10003;</span>
+            <div>@success</div>
+        </div>
     }
-    </tbody>
-</table>
+
+    <!-- Search & Filter Controls -->
+    <div class="card p-3 shadow-sm mb-4">
+        <div class="row g-2 align-items-center">
+            <div class="col-12 col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white text-muted border-end-0">&#128269;</span>
+                    <input type="text" id="inventorySearch" class="form-control border-start-0" placeholder="Search by product name, category, or branch..." />
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <select id="branchFilter" class="form-select">
+                    <option value="">All Branches</option>
+                    @foreach (var branchName in Model.Select(m => m.Inventory.Branch.Name).Distinct().OrderBy(n => n))
+                    {
+                        <option value="@branchName">@branchName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="btn-group w-100" role="group" aria-label="Status filters">
+                    <button type="button" class="btn btn-outline-secondary btn-sm active" data-filter="all">All</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" data-filter="low-stock">Low Stock</button>
+                    <button type="button" class="btn btn-outline-warning btn-sm" data-filter="expiring">Expiring Soon</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="card p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="inventoryTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Branch</th>
+                        <th>Product Details</th>
+                        <th class="text-center">On-Hand Qty</th>
+                        <th class="text-center">Threshold</th>
+                        <th>Stock Health</th>
+                        <th>Nearest Expiration</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model)
+                {
+                    var inventory = row.Inventory;
+                    var isLowStock = inventory.QuantityOnHand <= inventory.Product.LowStockThreshold;
+                    var isOutOfStock = inventory.QuantityOnHand <= 0;
+                    var isExpired = row.NearestExpiration.HasValue && row.NearestExpiration.Value.Date < DateTime.Today;
+                    var isExpiringSoon = row.NearestExpiration.HasValue && !isExpired && row.NearestExpiration.Value.Date <= DateTime.Today.AddDays(30);
+
+                    var filterClass = isLowStock ? "is-low-stock" : "is-ok";
+                    if (isExpiringSoon || isExpired) { filterClass += " is-expiring"; }
+
+                    <tr class="inventory-row @filterClass" 
+                        data-branch="@inventory.Branch.Name" 
+                        data-product="@inventory.Product.Name">
+                        <td>
+                            <span class="badge bg-light text-navy border">@inventory.Branch.Name</span>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-navy">@inventory.Product.Name</div>
+                            <div class="text-muted small">
+                                @(inventory.Product.Brand ?? "Generic") &middot; @(inventory.Product.Unit ?? "Unit")
+                                @if (inventory.Product.RequiresExpirationTracking)
+                                {
+                                    <span class="badge bg-light text-muted border ms-1">Expiry Tracked</span>
+                                }
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="fs-6 fw-bold @(isOutOfStock ? "text-danger" : (isLowStock ? "text-warning" : "text-navy"))">
+                                @inventory.QuantityOnHand
+                            </span>
+                        </td>
+                        <td class="text-center text-muted small">
+                            @inventory.Product.LowStockThreshold
+                        </td>
+                        <td>
+                            @if (isOutOfStock)
+                            {
+                                <span class="badge bg-danger">Out of Stock</span>
+                            }
+                            else if (isLowStock)
+                            {
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Low Stock</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">In Stock</span>
+                            }
+                        </td>
+                        <td>
+                            @if (row.NearestExpiration.HasValue)
+                            {
+                                <div class="fw-semibold text-navy">@row.NearestExpiration.Value.ToString("MMM d, yyyy")</div>
+                                @if (isExpired)
+                                {
+                                    <span class="badge bg-danger">Expired</span>
+                                }
+                                else if (isExpiringSoon)
+                                {
+                                    <span class="badge bg-warning text-dark">Expiring Soon</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted small">&mdash;</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="Adjust" class="btn btn-sm btn-outline-secondary px-2 py-1" title="Adjust stock">
+                                Adjust
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        'use strict';
+        var searchInput = document.getElementById('inventorySearch');
+        var branchSelect = document.getElementById('branchFilter');
+        var filterBtns = document.querySelectorAll('[data-filter]');
+        var rows = document.querySelectorAll('.inventory-row');
+        var currentFilter = 'all';
+
+        function applyFilters() {
+            var term = (searchInput.value || '').toLowerCase().trim();
+            var branch = (branchSelect.value || '').toLowerCase().trim();
+
+            rows.forEach(function (row) {
+                var productName = (row.getAttribute('data-product') || '').toLowerCase();
+                var rowBranch = (row.getAttribute('data-branch') || '').toLowerCase();
+
+                var matchesSearch = !term || productName.indexOf(term) !== -1 || rowBranch.indexOf(term) !== -1;
+                var matchesBranch = !branch || rowBranch === branch;
+                var matchesStatus = true;
+
+                if (currentFilter === 'low-stock') {
+                    matchesStatus = row.classList.contains('is-low-stock');
+                } else if (currentFilter === 'expiring') {
+                    matchesStatus = row.classList.contains('is-expiring');
+                }
+
+                row.style.display = (matchesSearch && matchesBranch && matchesStatus) ? '' : 'none';
+            });
+        }
+
+        if (searchInput) searchInput.addEventListener('input', applyFilters);
+        if (branchSelect) branchSelect.addEventListener('change', applyFilters);
+
+        filterBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                filterBtns.forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                currentFilter = btn.getAttribute('data-filter');
+                applyFilters();
+            });
+        });
+    })();
+</script>
+}

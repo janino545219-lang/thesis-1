@@ -32,6 +32,11 @@ public class AccountController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(CustomerRegisterViewModel model)
     {
+        if (!model.AgreeToTerms)
+        {
+            ModelState.AddModelError(nameof(model.AgreeToTerms), "You must agree to the Terms and Privacy Policy.");
+        }
+
         if (!ModelState.IsValid)
         {
             model.Branches = await context.Branches.Where(b => b.IsActive).ToListAsync();
@@ -78,6 +83,7 @@ public class AccountController(
 
         await signInManager.SignInAsync(user, isPersistent: false);
 
+        TempData["Success"] = "Your account has been registered successfully! Welcome to Farmacia San Antonio.";
         return RedirectToLocalOrHome(null);
     }
 

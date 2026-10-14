@@ -1,15 +1,18 @@
-@* Hero section with photo, floating cards, headline, and CTAs *@
+@* Hero section with professional pharmacy photo, floating cards, headline, and CTAs *@
 
 <section class="landing-hero" aria-label="Hero">
     <div class="landing-hero-text landing-animate landing-animate-1">
-        <h1>Multi-branch pharmacy care, backed by pharmacist-reviewed&nbsp;AI.</h1>
+        <div class="landing-hero-pill mb-3">
+            <span class="hero-pill-badge">Healthcare Platform</span>
+            <span class="hero-pill-text">Farmacia San Antonio</span>
+        </div>
+        <h1>Your Trusted Pharmacy, Made Smarter.</h1>
         <p class="landing-animate landing-animate-2">
-            AI-assisted OTC and supplement suggestions — always reviewed by a licensed
-            pharmacist before you pick up in-store.
+            Discover pharmacy products, explore pharmacist-reviewed recommendations, and conveniently preorder medicines for pickup at your preferred branch.
         </p>
         <div class="landing-hero-ctas landing-animate landing-animate-3">
             <a class="btn-landing-cta" asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">
-                Get Started as a Customer
+                Get Started
             </a>
             <a class="btn-landing-staff-link" asp-controller="Account" asp-action="Login">
                 Staff Sign In &rarr;
@@ -19,7 +22,7 @@
 
     <div class="landing-hero-image-wrap landing-animate landing-animate-4">
         <img src="/images/hero-pharmacy.webp"
-             alt="OTC medicine boxes, vitamin bottles, and blister packs on a clean pharmacy counter"
+             alt="Professional pharmacy products, medicines, and counter at Farmacia San Antonio"
              width="600"
              height="450"
              fetchpriority="high"
@@ -28,18 +31,18 @@
 
         <div class="landing-float-card landing-float-badge" aria-hidden="true">
             <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "shield-check" } })' />
-            <span>Pharmacist-reviewed</span>
-        </div>
-
-        <div class="landing-float-card landing-float-suggestion" aria-hidden="true">
-            <strong>Headache?</strong>
-            <span>Suggested: Paracetamol 500 mg</span>
-            <small>Pending pharmacist review</small>
+            <span>Pharmacist Reviewed</span>
         </div>
 
         <div class="landing-float-card landing-float-stock" aria-hidden="true">
             <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "check-circle" } })' />
-            <span>In stock at your branch</span>
+            <span>Branch Availability</span>
+        </div>
+
+        <div class="landing-float-card landing-float-suggestion" aria-hidden="true">
+            <strong>Headache &amp; Fever?</strong>
+            <span>Paracetamol 500 mg</span>
+            <small>Pharmacist-verified OTC guidance</small>
         </div>
     </div>
 </section>

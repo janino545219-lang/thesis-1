@@ -1,52 +1,106 @@
 @using FarmaciaSmart.Web.Models.Entities
 @model List<CustomerOrder>
 @{
-    ViewData["Title"] = "My Orders";
+    ViewData["Title"] = "My Pre-Orders - Farmacia San Antonio";
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/shop.css" asp-append-version="true" />
 }
 
-<div class="shop-page">
-    <h4>My Orders</h4>
-    <p><a asp-action="Index" class="btn btn-shop-primary">Back to Shop</a></p>
+<div class="shop-page py-2">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge" style="background-color: var(--brand-primary); color: #fff;">In-Store Pickup</span>
+                <span class="badge bg-light text-navy border">Pre-Order History</span>
+            </div>
+            <h2 class="fw-bold mb-1 text-navy">My Medicine Pre-Orders</h2>
+            <p class="text-secondary small mb-0">Track order statuses and pickup details for your active and past reservations.</p>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-action-blue px-3 py-2 fw-semibold">
+                <span>&#128722;</span> Browse Medicine Catalog
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] is string success)
+    {
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+            <span>&#10003;</span>
+            <div>@success</div>
+        </div>
+    }
 
     @if (Model.Count == 0)
     {
-        <p class="text-muted">You haven't placed any orders yet.</p>
+        <div class="card p-5 text-center shadow-sm">
+            <div class="fs-1 text-muted mb-3">&#128230;</div>
+            <h5 class="fw-bold text-navy mb-2">No Pre-Orders Placed Yet</h5>
+            <p class="text-muted small mb-4">Select medicines from your preferred branch catalog and place a pre-order for quick counter pickup.</p>
+            <div>
+                <a asp-action="Index" class="btn btn-primary px-4 py-2">Start Shopping Now</a>
+            </div>
+        </div>
     }
     else
     {
-        <div class="shop-sidebar">
+        <div class="card p-0 overflow-hidden shadow-sm">
             <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Order #</th>
-                        <th>Branch</th>
-                        <th>Items</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Placed</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach (var order in Model)
-                {
-                    <tr>
-                        <td>@order.OrderNumber</td>
-                        <td>@order.Branch.Name</td>
-                        <td>@order.Items.Sum(i => i.Quantity)</td>
-                        <td>@order.TotalAmount.ToString("N2")</td>
-                        <td>@order.Status</td>
-                        <td>@order.CreatedAt.ToString("g")</td>
-                        <td><a asp-action="OrderDetails" asp-route-id="@order.Id" class="btn btn-sm btn-outline-secondary">View</a></td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order Number</th>
+                            <th>Pickup Branch</th>
+                            <th class="text-center">Items</th>
+                            <th class="text-end">Total Amount</th>
+                            <th>Status</th>
+                            <th>Submitted Date</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var order in Model)
+                    {
+                        var statusBadge = order.Status switch
+                        {
+                            CustomerOrderStatus.Fulfilled => "bg-success text-white",
+                            CustomerOrderStatus.Cancelled => "bg-danger text-white",
+                            _ => "bg-warning text-dark"
+                        };
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-navy font-monospace">@order.OrderNumber</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-navy border">@order.Branch.Name</span>
+                            </td>
+                            <td class="text-center">
+                                @order.Items.Sum(i => i.Quantity) item(s)
+                            </td>
+                            <td class="text-end fw-bold text-navy">
+                                &#8369;@order.TotalAmount.ToString("N2")
+                            </td>
+                            <td>
+                                <span class="badge @statusBadge">
+                                    @(order.Status == CustomerOrderStatus.Pending ? "Pending Pickup" : order.Status.ToString())
+                                </span>
+                            </td>
+                            <td>
+                                <div class="text-navy small fw-semibold">@order.CreatedAt.ToString("MMM d, yyyy")</div>
+                                <div class="text-muted small">@order.CreatedAt.ToString("hh:mm tt")</div>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="OrderDetails" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary px-3">
+                                    View Details &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
             </div>
         </div>
     }

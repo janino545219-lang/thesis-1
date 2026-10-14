@@ -15,10 +15,10 @@ public class LandingContentServiceTests
     }
 
     [Fact]
-    public void GetSteps_Returns_Three_Items()
+    public void GetSteps_Returns_Five_Items()
     {
         var items = _sut.GetSteps();
-        Assert.Equal(3, items.Count);
+        Assert.Equal(5, items.Count);
     }
 
     [Fact]

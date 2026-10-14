@@ -1,39 +1,108 @@
 @model List<Recommendation>
 @{
-    ViewData["Title"] = "Pending Recommendation Reviews";
+    ViewData["Title"] = "Pending Pharmacist Reviews - Farmacia San Antonio";
 }
 
-<h2>Pending Recommendation Reviews</h2>
+<div class="py-2">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge" style="background: #326BE8; color: #fff;">Clinical Supervision</span>
+                <span class="badge bg-light text-navy border">Section 7 Workflow</span>
+            </div>
+            <h2 class="fw-bold mb-1 text-navy">Pharmacist Recommendation Review Queue</h2>
+            <p class="text-secondary small mb-0">Evaluate preliminary OTC suggestions before they are presented as pharmacist-approved to customers.</p>
+        </div>
+        <div>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                &larr; Back to Dashboard
+            </a>
+        </div>
+    </div>
 
-@if (TempData["Success"] is string success)
-{
-    <div class="alert alert-success">@success</div>
-}
-@if (TempData["Error"] is string error)
-{
-    <div class="alert alert-danger">@error</div>
-}
+    <!-- Clinical Safety Alert -->
+    <div class="alert alert-info d-flex align-items-start gap-3 mb-4" role="alert" style="background: #edf4fe; border-color: #cbdcfc; border-radius: 14px;">
+        <div class="fs-4 text-primary">&#9878;</div>
+        <div class="small">
+            <strong class="d-block mb-1 text-navy">Licensed Clinical Oversight Required</strong>
+            AI-generated product suggestions are strictly limited to over-the-counter (OTC) medicines and dietary supplements. AI suggestions must never substitute for clinical diagnostic advice or dispense prescription drugs. Only certified pharmacists are authorized to review and approve these recommendations.
+        </div>
+    </div>
 
-<div class="table-responsive">
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Requested</th>
-            <th>Customer</th>
-            <th>Category</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var rec in Model)
+    @if (TempData["Success"] is string success)
     {
-        <tr>
-            <td>@rec.CreatedAt.ToString("g")</td>
-            <td>@rec.Customer.User.FirstName @rec.Customer.User.LastName</td>
-            <td>@rec.Category.Name</td>
-            <td><a asp-action="Details" asp-route-id="@rec.Id" class="btn btn-sm btn-outline-primary">Review</a></td>
-        </tr>
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+            <span>&#10003;</span>
+            <div>@success</div>
+        </div>
     }
-    </tbody>
-</table>
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger d-flex align-items-center gap-2 mb-4" role="alert">
+            <span>&#9888;</span>
+            <div>@error</div>
+        </div>
+    }
+
+    <!-- Pending Queue Table -->
+    <div class="card p-0 overflow-hidden mb-4 shadow-sm">
+        <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold text-navy mb-0">Recommendations Awaiting Review (@Model.Count)</h6>
+            <span class="text-muted small">Sorted by oldest request first</span>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="text-center py-5">
+                <div class="fs-1 text-success mb-2">&#9989;</div>
+                <h6 class="fw-bold text-navy mb-1">All Caught Up!</h6>
+                <p class="text-muted small mb-0">There are currently no recommendation requests awaiting review.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Requested At</th>
+                            <th>Customer Name</th>
+                            <th>Category</th>
+                            <th>Review Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var rec in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold text-navy">@rec.CreatedAt.ToString("MMM d, yyyy")</div>
+                                <div class="text-muted small">@rec.CreatedAt.ToString("hh:mm tt")</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-navy">@rec.Customer.User.FirstName @rec.Customer.User.LastName</div>
+                                <div class="text-muted small">@rec.Customer.User.Email</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-navy border">@rec.Category.Name</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    Pending Review
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@rec.Id" class="btn btn-sm btn-action-blue px-3 py-1">
+                                    Review Now &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
 </div>

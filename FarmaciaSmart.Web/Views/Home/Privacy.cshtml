@@ -1,6 +1,57 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Privacy Policy - Farmacia San Antonio";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-4" style="max-width: 900px;">
+    <div class="mb-4">
+        <span class="badge" style="background-color: var(--brand-primary); color: #fff;">Privacy &amp; Data Protection</span>
+        <h1 class="fw-bold text-navy mt-2 mb-1">Privacy Policy &amp; Terms of Service</h1>
+        <p class="text-secondary small">Last updated: October 2026 &middot; Farmacia San Antonio Healthcare System</p>
+    </div>
+
+    <div class="card p-4 p-md-5 shadow-sm border-0 mb-4 bg-white">
+        <section class="mb-4">
+            <h4 class="fw-bold text-navy mb-3">1. Commitment to Health Data Privacy</h4>
+            <p class="text-secondary leading-relaxed">
+                Farmacia San Antonio is committed to protecting the confidentiality, integrity, and security of customer personal health information. When you use our digital platform to explore medicine catalogs, request over-the-counter (OTC) recommendations, or submit pre-orders for in-store pickup, your information is processed strictly to facilitate your pharmaceutical care.
+            </p>
+        </section>
+
+        <section class="mb-4">
+            <h4 class="fw-bold text-navy mb-3">2. Information We Collect</h4>
+            <ul class="text-secondary ps-3">
+                <li class="mb-2"><strong>Identity &amp; Account Information:</strong> Your name, email address, password hash, and contact number provided during account registration.</li>
+                <li class="mb-2"><strong>Branch &amp; Pre-Order Details:</strong> Your preferred pickup branch, items selected, requested quantities, and pre-order timestamps.</li>
+                <li class="mb-2"><strong>Recommendation Inquiries:</strong> Non-prescription OTC symptom categories and dietary supplement preferences queried for preliminary pharmacist-guided recommendations.</li>
+            </ul>
+        </section>
+
+        <section class="mb-4">
+            <h4 class="fw-bold text-navy mb-3">3. Pharmacist Clinical Supervision &amp; Non-Prescription Safety</h4>
+            <p class="text-secondary leading-relaxed">
+                Farmacia San Antonio employs AI assistance solely as an auxiliary screening tool for over-the-counter products. <strong>AI suggestions are never presented as confirmed medical advice.</strong> A qualified licensed pharmacist independently evaluates all relevant recommendations and customer requests before dispensation. Prescription medications always require an original physician's prescription verified by our pharmacists in store.
+            </p>
+        </section>
+
+        <section class="mb-4">
+            <h4 class="fw-bold text-navy mb-3">4. Security Measures &amp; Audit Trail</h4>
+            <p class="text-secondary leading-relaxed">
+                We implement industry-standard cryptographic hashing for authentication passwords, authenticated HTTP-only cookie sessions with automatic sliding timeouts, periodic security stamp verification, and immutable server-side audit logs. All inventory movements and order status modifications are recorded with authorized user identification and UTC timestamps.
+            </p>
+        </section>
+
+        <section class="mb-4">
+            <h4 class="fw-bold text-navy mb-3">5. Patient Rights &amp; Contact</h4>
+            <p class="text-secondary leading-relaxed">
+                You may review and update your customer profile, change your preferred branch, or cancel pending pre-orders directly via your Customer Dashboard. If you have any inquiries regarding your data or pharmaceutical care, please speak with our licensed staff at your registered branch counter.
+            </p>
+        </section>
+
+        <div class="border-top pt-3 d-flex justify-content-between align-items-center">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                &larr; Back to Home
+            </a>
+            <span class="text-muted small">&copy; @DateTime.UtcNow.Year Farmacia San Antonio</span>
+        </div>
+    </div>
+</div>

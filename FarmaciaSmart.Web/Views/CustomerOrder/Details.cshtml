@@ -1,50 +1,147 @@
 @using FarmaciaSmart.Web.Models.Entities
 @model CustomerOrder
 @{
-    ViewData["Title"] = "Customer Order Details";
+    ViewData["Title"] = $"Fulfill Order #{Model.OrderNumber} - Farmacia San Antonio";
 }
 
-<h2>Order @Model.OrderNumber</h2>
-<p>Customer: @Model.Customer.User.FirstName @Model.Customer.User.LastName (@Model.Customer.User.Email)</p>
-<p>Pickup branch: @Model.Branch.Name &mdash; Status: <strong>@Model.Status</strong></p>
-@if (!string.IsNullOrWhiteSpace(Model.Notes))
-{
-    <p>Customer notes: @Model.Notes</p>
-}
+<div class="py-2">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a asp-action="Index">Pre-Orders</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.OrderNumber</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold mb-0 text-navy">Order Fulfillment: @Model.OrderNumber</h2>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                &larr; Back to Order Queue
+            </a>
+        </div>
+    </div>
 
-<div class="table-responsive">
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Unit Price</th>
-            <th>Line Total</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.Items)
+    <!-- Order Metadata Card -->
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="row g-3">
+            <div class="col-12 col-md-3">
+                <span class="text-muted small text-uppercase fw-bold">Customer Name</span>
+                <div class="fw-bold text-navy fs-6">@Model.Customer.User.FirstName @Model.Customer.User.LastName</div>
+                <div class="text-muted small">@Model.Customer.User.Email</div>
+            </div>
+            <div class="col-12 col-md-3">
+                <span class="text-muted small text-uppercase fw-bold">Contact Number</span>
+                <div class="fw-bold text-navy fs-6">@(Model.Customer.ContactNumber ?? "None provided")</div>
+            </div>
+            <div class="col-12 col-md-3">
+                <span class="text-muted small text-uppercase fw-bold">Pickup Branch</span>
+                <div class="fw-bold text-navy fs-6">@Model.Branch.Name</div>
+                <div class="text-muted small">@Model.Branch.Address</div>
+            </div>
+            <div class="col-12 col-md-3">
+                <span class="text-muted small text-uppercase fw-bold">Current Status</span>
+                <div class="mt-1">
+                    @{
+                        var statusBadge = Model.Status switch
+                        {
+                            CustomerOrderStatus.Fulfilled => "bg-success text-white",
+                            CustomerOrderStatus.Cancelled => "bg-danger text-white",
+                            _ => "bg-warning text-dark"
+                        };
+                    }
+                    <span class="badge @statusBadge fs-6">@Model.Status</span>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Notes))
+        {
+            <div class="mt-3 pt-3 border-top">
+                <span class="text-muted small text-uppercase fw-bold">Customer Special Instructions:</span>
+                <p class="mb-0 text-navy small">@Model.Notes</p>
+            </div>
+        }
+    </div>
+
+    <!-- Pre-ordered Items Table -->
+    <div class="card p-0 overflow-hidden shadow-sm mb-4">
+        <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold text-navy mb-0">Items Requested for Counter Collection</h6>
+            <span class="badge bg-light text-navy border">@Model.Items.Count item line(s)</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Product Details</th>
+                        <th class="text-center">Quantity</th>
+                        <th class="text-end">Unit Price</th>
+                        <th class="text-end">Line Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-navy">@item.Product.Name</div>
+                            <div class="text-muted small">@(item.Product.Brand ?? "Generic") &middot; @(item.Product.Unit ?? "Unit")</div>
+                        </td>
+                        <td class="text-center fw-semibold">
+                            @item.Quantity
+                        </td>
+                        <td class="text-end">
+                            &#8369;@item.UnitPriceAtOrderTime.ToString("N2")
+                        </td>
+                        <td class="text-end fw-bold text-navy">
+                            &#8369;@((item.UnitPriceAtOrderTime * item.Quantity).ToString("N2"))
+                        </td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold fs-6">Total Amount Due:</td>
+                        <td class="text-end fw-bold fs-5 text-primary">&#8369;@Model.TotalAmount.ToString("N2")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Fulfillment Action Section -->
+    @if (Model.Status == CustomerOrderStatus.Pending)
     {
-        <tr>
-            <td>@item.Product.Name</td>
-            <td>@item.Quantity</td>
-            <td>@item.UnitPriceAtOrderTime.ToString("N2")</td>
-            <td>@((item.UnitPriceAtOrderTime * item.Quantity).ToString("N2"))</td>
-        </tr>
+        <div class="card p-4 shadow-sm border-success-subtle" style="background: #fbfdfc;">
+            <h6 class="fw-bold text-navy mb-2">Order Fulfillment &amp; In-Store Collection</h6>
+            <p class="text-secondary small mb-3">
+                Verify customer identity and process payment at the branch POS counter. Once products are handed over and paid, confirm completion below:
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <form asp-action="Fulfill" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success px-4 py-2 fw-semibold">
+                        <span>&#10003;</span> Mark Fulfilled (Customer Picked Up &amp; Paid)
+                    </button>
+                </form>
+                <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this preorder?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-danger px-3 py-2">
+                        Cancel Pre-Order
+                    </button>
+                </form>
+            </div>
+        </div>
     }
-    </tbody>
-</table>
+    else if (Model.Status == CustomerOrderStatus.Fulfilled)
+    {
+        <div class="alert alert-success d-flex align-items-center gap-2" role="alert">
+            <span>&#10003;</span>
+            <div>
+                <strong>Completed:</strong> This pre-order was marked fulfilled on @Model.FulfilledAt?.ToString("MMM d, yyyy hh:mm tt UTC").
+            </div>
+        </div>
+    }
 </div>
-<p class="text-end"><strong>Total: @Model.TotalAmount.ToString("N2")</strong></p>
-
-@if (Model.Status == CustomerOrderStatus.Pending)
-{
-    <form asp-action="Fulfill" asp-route-id="@Model.Id" method="post" class="d-inline">
-        <button type="submit" class="btn btn-success">Mark Fulfilled (customer picked up &amp; paid via POS)</button>
-    </form>
-    <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
-        <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
-    </form>
-}
-
-<a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>

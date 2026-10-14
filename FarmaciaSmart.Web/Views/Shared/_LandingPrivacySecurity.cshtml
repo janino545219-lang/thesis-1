@@ -1,0 +1,58 @@
+<section class="landing-privacy-security" id="privacy-security" aria-labelledby="privacy-heading">
+    <div class="landing-privacy-inner reveal">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-5">
+                <div class="landing-section-badge mb-2">Privacy &amp; Compliance</div>
+                <h2 id="privacy-heading" class="fw-bold mb-3 text-navy">How We Handle Your Information</h2>
+                <p class="text-secondary mb-4">
+                    At Farmacia San Antonio, maintaining confidentiality and medicine integrity is our clinical commitment. We safeguard patient accounts with strict access controls and healthcare standards.
+                </p>
+                <div class="d-flex align-items-center gap-3">
+                    <a asp-controller="Home" asp-action="Privacy" class="btn btn-outline-primary btn-sm px-3 py-2">
+                        Read Full Privacy Policy &rarr;
+                    </a>
+                </div>
+            </div>
+            <div class="col-12 col-lg-7">
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6">
+                        <div class="privacy-card">
+                            <div class="privacy-card-icon icon-box-green">
+                                <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "shield-check" } })' />
+                            </div>
+                            <h4 class="fw-bold fs-6 mb-1 text-navy">Confidential Records</h4>
+                            <p class="text-secondary small mb-0">Your profile, contact details, and preorder history are stored securely and never shared with third-party advertisers.</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="privacy-card">
+                            <div class="privacy-card-icon icon-box-blue">
+                                <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "clipboard-check" } })' />
+                            </div>
+                            <h4 class="fw-bold fs-6 mb-1 text-navy">Licensed Oversight</h4>
+                            <p class="text-secondary small mb-0">AI recommendations are strictly limited to OTC products and require licensed pharmacist verification before pickup.</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="privacy-card">
+                            <div class="privacy-card-icon icon-box-navy">
+                                <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "lock" } })' />
+                            </div>
+                            <h4 class="fw-bold fs-6 mb-1 text-navy">Encrypted Identity</h4>
+                            <p class="text-secondary small mb-0">Password hashing, authenticated cookie sessions, and security stamps automatically prevent unauthorized session hijacking.</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="privacy-card">
+                            <div class="privacy-card-icon icon-box-red">
+                                <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "chart" } })' />
+                            </div>
+                            <h4 class="fw-bold fs-6 mb-1 text-navy">Audit Logging</h4>
+                            <p class="text-secondary small mb-0">Every inventory movement, status change, and fulfillment activity is logged for patient safety and regulatory compliance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
