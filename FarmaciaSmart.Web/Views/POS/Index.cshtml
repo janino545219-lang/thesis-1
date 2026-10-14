@@ -1,0 +1,92 @@
+@using FarmaciaSmart.Web.Models.ViewModels.Sales
+@model List<Product>
+@{
+    ViewData["Title"] = "Point of Sale";
+    var cart = ViewBag.Cart as List<CartItemDto> ?? [];
+}
+
+<h2>Point of Sale &mdash; @ViewBag.BranchName</h2>
+
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="row">
+    <div class="col-12 col-md-7">
+        <form method="get" asp-action="Index" class="mb-3 d-flex gap-2">
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search by name or scan/type barcode" />
+            <button type="submit" class="btn btn-outline-secondary">Search</button>
+        </form>
+
+        <form asp-action="AddByBarcode" method="post" class="mb-3 d-flex gap-2">
+            <input type="text" name="barcode" class="form-control" placeholder="Scan or type exact barcode" />
+            <input type="number" name="quantity" value="1" min="1" class="form-control" style="max-width:100px" />
+            <button type="submit" class="btn btn-primary">Add by Barcode</button>
+        </form>
+
+        <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Price.ToString("N2")</td>
+                    <td colspan="2">
+                        <form asp-action="AddToCart" method="post" class="d-flex gap-1">
+                            <input type="hidden" name="productId" value="@product.Id" />
+                            <input type="number" name="quantity" value="1" min="1" class="form-control form-control-sm" style="max-width:80px" />
+                            <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-5">
+        <h4>Cart</h4>
+        <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Line Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in cart)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.LineTotal.ToString("N2")</td>
+                    <td>
+                        <form asp-action="RemoveFromCart" method="post">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+        <p><strong>Subtotal: @cart.Sum(i => i.LineTotal).ToString("N2")</strong></p>
+        <a asp-action="Checkout" class="btn btn-success @(cart.Count == 0 ? "disabled" : "")">Proceed to Checkout</a>
+        <a asp-action="History" class="btn btn-outline-secondary">Sales History</a>
+    </div>
+</div>

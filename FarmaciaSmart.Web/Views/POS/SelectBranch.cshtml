@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Select Branch";
+    var branches = ViewBag.Branches as List<Branch> ?? [];
+}
+
+<h2>Select Branch</h2>
+<p>Your account is not assigned to a specific branch. Choose which branch's POS you are operating.</p>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="SelectBranch" method="post">
+    <div class="mb-3">
+        <select name="branchId" class="form-select">
+            <option value="">-- Select branch --</option>
+            @foreach (var branch in branches)
+            {
+                <option value="@branch.Id">@branch.Name</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Continue</button>
+</form>

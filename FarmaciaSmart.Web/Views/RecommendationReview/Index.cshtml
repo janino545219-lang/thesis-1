@@ -1,0 +1,39 @@
+@model List<Recommendation>
+@{
+    ViewData["Title"] = "Pending Recommendation Reviews";
+}
+
+<h2>Pending Recommendation Reviews</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Requested</th>
+            <th>Customer</th>
+            <th>Category</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var rec in Model)
+    {
+        <tr>
+            <td>@rec.CreatedAt.ToString("g")</td>
+            <td>@rec.Customer.User.FirstName @rec.Customer.User.LastName</td>
+            <td>@rec.Category.Name</td>
+            <td><a asp-action="Details" asp-route-id="@rec.Id" class="btn btn-sm btn-outline-primary">Review</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

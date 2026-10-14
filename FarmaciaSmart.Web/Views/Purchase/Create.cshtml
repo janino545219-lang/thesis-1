@@ -1,0 +1,42 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Purchasing.CreatePurchaseOrderViewModel
+@{
+    ViewData["Title"] = "Create Purchase Order";
+}
+
+<h2>Create Purchase Order</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Create" method="post">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="SupplierId" class="form-label"></label>
+            <select asp-for="SupplierId" class="form-select" asp-items="@(new SelectList(Model.Suppliers, "Id", "Name"))">
+                <option value="">-- Select supplier --</option>
+            </select>
+            <span asp-validation-for="SupplierId" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="BranchId" class="form-label"></label>
+            <select asp-for="BranchId" class="form-select" asp-items="@(new SelectList(Model.Branches, "Id", "Name"))">
+                <option value="">-- Select branch --</option>
+            </select>
+            <span asp-validation-for="BranchId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ExpectedDeliveryDate" class="form-label"></label>
+        <input asp-for="ExpectedDeliveryDate" class="form-control" />
+        <span asp-validation-for="ExpectedDeliveryDate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Notes" class="form-label"></label>
+        <textarea asp-for="Notes" class="form-control"></textarea>
+    </div>
+    <div class="form-text mb-3">Add line items on the next screen, then place the order.</div>
+    <button type="submit" class="btn btn-primary">Create Draft</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

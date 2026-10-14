@@ -1,0 +1,65 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h2>Products</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Product</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Brand</th>
+            <th>Price</th>
+            <th>Type</th>
+            <th>Barcode</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var product in Model)
+    {
+        <tr>
+            <td>@product.Name</td>
+            <td>@product.Category.Name</td>
+            <td>@product.Brand</td>
+            <td>@product.Price.ToString("N2")</td>
+            <td>@product.ProductType</td>
+            <td>@product.Barcode</td>
+            <td>
+                @if (product.IsActive)
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Inactive</span>
+                }
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="ToggleActive" asp-route-id="@product.Id" method="post" class="d-inline">
+                    <input type="hidden" name="isActive" value="@(!product.IsActive)" />
+                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                        @(product.IsActive ? "Deactivate" : "Activate")
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

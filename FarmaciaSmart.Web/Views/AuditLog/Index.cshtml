@@ -1,0 +1,37 @@
+@using FarmaciaSmart.Web.Models.Entities
+@using FarmaciaSmart.Web.Models.ViewModels
+@model PagedResult<AuditLog>
+@{
+    ViewData["Title"] = "Audit Log";
+}
+
+<h2>Audit Log</h2>
+<p class="form-text">@Model.TotalCount total entries. Page @Model.Page of @Model.TotalPages.</p>
+
+<div class="table-responsive">
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Details</th>
+            <th>IP Address</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var log in Model.Items)
+    {
+        <tr>
+            <td>@log.Timestamp.ToString("g")</td>
+            <td>@(log.User?.Email ?? "(system)")</td>
+            <td>@log.Action</td>
+            <td>@log.Details</td>
+            <td>@log.IpAddress</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+
+<partial name="_Pager" model="(Model.Page, Model.TotalPages)" />

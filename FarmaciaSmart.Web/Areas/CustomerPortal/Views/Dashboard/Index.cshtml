@@ -1,0 +1,188 @@
+@using FarmaciaSmart.Web.Areas.CustomerPortal.Models.ViewModels
+@using FarmaciaSmart.Web.Models.Entities
+@model CustomerDashboardViewModel
+@{
+    ViewData["Title"] = "My Dashboard";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/analytics.css" asp-append-version="true" />
+}
+
+<div class="analytics-page">
+    <h2 class="mb-4">Welcome, @Model.Customer.User.FirstName!</h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card-primary">
+                <div class="stat-label">Total Spent</div>
+                <div class="stat-value">@Model.TotalSpent.ToString("N2")</div>
+                <div class="stat-delta-none" style="color:rgba(255,255,255,0.75)">Lifetime, in-store purchases</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-label">Pre-Orders Placed</div>
+                <div class="stat-value">@Model.TotalOrders</div>
+                <a asp-controller="Shop" asp-action="Orders" class="stat-delta-none text-decoration-none">View all &rarr;</a>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-label">Pending Pickup</div>
+                <div class="stat-value">@Model.PendingOrders</div>
+                <div class="stat-delta-none">Awaiting pickup at branch</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-label">AI Recommendations</div>
+                <div class="stat-value">@Model.RecommendationsReceived</div>
+                <a asp-controller="Recommendation" asp-action="History" class="stat-delta-none text-decoration-none">View history &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-7">
+            <div class="analytics-card h-100">
+                <h6 class="mb-3">Spending Trend <small class="text-muted">(last 6 months)</small></h6>
+                <canvas id="spendingTrendChart" height="220"></canvas>
+            </div>
+        </div>
+        <div class="col-12 col-lg-5">
+            <div class="analytics-card h-100">
+                <h6 class="mb-3">Pre-Order Status</h6>
+                @if (Model.TotalOrders == 0)
+                {
+                    <p class="text-muted small mb-0">You haven't placed any pre-orders yet.</p>
+                }
+                else
+                {
+                    <canvas id="orderStatusChart" height="220"></canvas>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-4">
+            <div class="analytics-card h-100">
+                <h6 class="mb-2">Shop</h6>
+                <p class="text-muted small">Browse products and place a pre-order for in-store pickup.</p>
+                <a asp-controller="Shop" asp-action="Index" class="btn btn-sm btn-primary">Go to Shop</a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="analytics-card h-100">
+                <h6 class="mb-2">Ask AI</h6>
+                <p class="text-muted small">Get a preliminary suggestion based on pharmacist-approved guidance.</p>
+                <a asp-controller="Recommendation" asp-action="Index" class="btn btn-sm btn-primary">Ask AI</a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="analytics-card h-100">
+                <h6 class="mb-2">My Profile</h6>
+                <p class="text-muted small">Status: @Model.Customer.Status &middot; Preferred branch: @(Model.Customer.PreferredBranch?.Name ?? "None set")</p>
+                <a asp-controller="Profile" asp-action="Index" class="btn btn-sm btn-outline-primary">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-7">
+            <div class="analytics-card">
+                <h6 class="mb-3">Recent Purchases</h6>
+                @if (Model.RecentPurchases.Count == 0)
+                {
+                    <p class="text-muted small mb-0">No completed purchases yet. Purchases made in-store under your account will show up here.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Branch</th>
+                                    <th>Items</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var sale in Model.RecentPurchases)
+                            {
+                                <tr>
+                                    <td>@sale.SaleDate.ToString("MMM d, yyyy")</td>
+                                    <td>@sale.Branch.Name</td>
+                                    <td>@sale.Items.Sum(i => i.Quantity)</td>
+                                    <td class="text-end">@sale.TotalAmount.ToString("N2")</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-12 col-lg-5">
+            <div class="analytics-card">
+                <h6 class="mb-3">Recent AI Recommendations</h6>
+                @if (Model.RecentRecommendations.Count == 0)
+                {
+                    <p class="text-muted small mb-0">You haven't asked the AI for a recommendation yet.</p>
+                }
+                else
+                {
+                    @foreach (var rec in Model.RecentRecommendations)
+                    {
+                        var badgeClass = rec.ReviewStatus switch
+                        {
+                            RecommendationReviewStatus.Approved => "bg-success",
+                            RecommendationReviewStatus.Modified => "bg-info text-dark",
+                            RecommendationReviewStatus.Rejected => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+                        <a asp-controller="Recommendation" asp-action="Result" asp-route-id="@rec.Id" class="rank-list-item text-decoration-none">
+                            <div class="rank-list-body">
+                                <div class="rank-list-name">@rec.Category.Name</div>
+                                <div class="text-muted" style="font-size:0.78rem;">@rec.CreatedAt.ToString("MMM d, yyyy")</div>
+                            </div>
+                            <span class="badge @badgeClass">@rec.ReviewStatus</span>
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const spendLabels = @Html.Raw(Json.Serialize(Model.SpendingTrend.Select(p => p.MonthLabel)));
+    const spendData = @Html.Raw(Json.Serialize(Model.SpendingTrend.Select(p => p.TotalAmount)));
+    new Chart(document.getElementById('spendingTrendChart'), {
+        type: 'bar',
+        data: { labels: spendLabels, datasets: [{ label: 'Spent', data: spendData, backgroundColor: '#2f6fed', borderRadius: 6 }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    @if (Model.TotalOrders > 0)
+    {
+        <text>
+        new Chart(document.getElementById('orderStatusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Fulfilled', 'Cancelled'],
+                datasets: [{
+                    data: [@Model.PendingOrderCount, @Model.FulfilledOrderCount, @Model.CancelledOrderCount],
+                    backgroundColor: ['#f5a623', '#1f9d55', '#d9455f']
+                }]
+            },
+            options: { plugins: { legend: { position: 'bottom' } } }
+        });
+        </text>
+    }
+</script>
+}

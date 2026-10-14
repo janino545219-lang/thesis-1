@@ -1,0 +1,30 @@
+@model IReadOnlyList<FarmaciaSmart.Web.Models.ViewModels.Landing.FeatureItem>
+
+<section class="landing-features" id="features" aria-labelledby="features-heading">
+    <h2 id="features-heading" class="landing-section-heading reveal">Everything You Need</h2>
+    <div class="landing-features-grid">
+        @{ var featureIndex = 0; }
+        @foreach (var item in Model)
+        {
+            var colorClass = featureIndex switch
+            {
+                0 => "icon-box-blue",
+                1 => "icon-box-purple",
+                2 => "icon-box-teal",
+                3 => "icon-box-amber",
+                _ => "icon-box-blue"
+            };
+
+            <div class="landing-feature-card reveal" style="--reveal-delay: @(featureIndex * 100)ms">
+                <div class="landing-icon-box @colorClass" role="img" aria-label="@item.Title icon">
+                    <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", item.Icon } })' />
+                </div>
+                <h3>@item.Title</h3>
+                <p>@item.Description</p>
+                <a href="@item.Href" class="landing-card-link">Learn more &rarr;</a>
+            </div>
+
+            featureIndex++;
+        }
+    </div>
+</section>

@@ -1,0 +1,49 @@
+@using FarmaciaSmart.Web.Models.ViewModels.Inventories
+@model List<StockRowViewModel>
+@{
+    ViewData["Title"] = "Low Stock Report";
+    var branches = ViewBag.Branches as List<Branch> ?? [];
+}
+
+<h2>Low Stock Report</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="branchId" class="form-select">
+            <option value="">All Branches</option>
+            @foreach (var branch in branches)
+            {
+                <option value="@branch.Id" selected="@(ViewBag.BranchId != null && (int)ViewBag.BranchId == branch.Id)">@branch.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Filter</button>
+    </div>
+</form>
+
+<p><strong>@Model.Count item(s) at or below their low-stock threshold.</strong></p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Branch</th>
+            <th>Product</th>
+            <th>On Hand</th>
+            <th>Threshold</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var row in Model)
+    {
+        <tr>
+            <td>@row.Inventory.Branch.Name</td>
+            <td>@row.Inventory.Product.Name</td>
+            <td>@row.Inventory.QuantityOnHand</td>
+            <td>@row.Inventory.Product.LowStockThreshold</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

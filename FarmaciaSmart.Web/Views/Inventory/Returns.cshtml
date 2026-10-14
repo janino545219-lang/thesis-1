@@ -1,0 +1,53 @@
+@model List<Return>
+@{
+    ViewData["Title"] = "Returns";
+}
+
+<h2>Returns</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<p>
+    <a asp-action="Return" class="btn btn-primary">Process Return</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to Stock</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Return #</th>
+            <th>Date</th>
+            <th>Sale Receipt</th>
+            <th>Branch</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Refund</th>
+            <th>Restocked</th>
+            <th>Reason</th>
+            <th>Processed By</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var ret in Model)
+    {
+        var item = ret.Items.FirstOrDefault();
+        <tr>
+            <td>@ret.ReturnNumber</td>
+            <td>@ret.ReturnDate.ToString("g")</td>
+            <td>@ret.Sale.ReceiptNumber</td>
+            <td>@ret.Branch.Name</td>
+            <td>@item?.Product.Name</td>
+            <td>@item?.Quantity</td>
+            <td>@ret.TotalRefundAmount.ToString("N2")</td>
+            <td>@(item is not null && item.RestockedToInventory ? "Yes" : "No")</td>
+            <td>@ret.Reason</td>
+            <td>@ret.ProcessedByUser.Email</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

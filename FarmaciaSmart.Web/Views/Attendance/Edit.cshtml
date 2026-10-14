@@ -1,0 +1,33 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Attendances.AttendanceCorrectionViewModel
+@{
+    ViewData["Title"] = "Correct Attendance";
+}
+
+<h2>Correct Attendance &mdash; @Model.EmployeeName (@Model.AttendanceDate.ToString("d"))</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="EmployeeId" />
+    <input type="hidden" asp-for="EmployeeName" />
+    <input type="hidden" asp-for="AttendanceDate" />
+    <div class="mb-3">
+        <label asp-for="TimeIn" class="form-label"></label>
+        <input asp-for="TimeIn" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" type="datetime-local" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="TimeOut" class="form-label"></label>
+        <input asp-for="TimeOut" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" type="datetime-local" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="CorrectionReason" class="form-label"></label>
+        <textarea asp-for="CorrectionReason" class="form-control"></textarea>
+        <span asp-validation-for="CorrectionReason" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Correction</button>
+    <a asp-action="History" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

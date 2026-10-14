@@ -1,0 +1,46 @@
+@using FarmaciaSmart.Web.Models.Entities
+@model Customer
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<h2>@Model.User.FirstName @Model.User.LastName</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.User.Email</dd>
+
+    <dt class="col-sm-3">Contact Number</dt>
+    <dd class="col-sm-9">@(Model.ContactNumber ?? "—")</dd>
+
+    <dt class="col-sm-3">Preferred Branch</dt>
+    <dd class="col-sm-9">@(Model.PreferredBranch?.Name ?? "—")</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+
+    <dt class="col-sm-3">Registered</dt>
+    <dd class="col-sm-9">@Model.CreatedAt.ToString("g")</dd>
+</dl>
+
+<form asp-action="SetStatus" method="post" class="d-inline">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <input type="hidden" name="status" value="@CustomerStatus.Active" />
+    <button type="submit" class="btn btn-outline-success" @(Model.Status == CustomerStatus.Active ? "disabled" : "")>Reactivate</button>
+</form>
+<form asp-action="SetStatus" method="post" class="d-inline">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <input type="hidden" name="status" value="@CustomerStatus.Suspended" />
+    <button type="submit" class="btn btn-outline-danger" @(Model.Status == CustomerStatus.Suspended ? "disabled" : "")>Suspend</button>
+</form>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>

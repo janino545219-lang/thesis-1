@@ -1,0 +1,60 @@
+@model List<InventoryBatch>
+@{
+    ViewData["Title"] = "Expiration Report";
+    var branches = ViewBag.Branches as List<Branch> ?? [];
+}
+
+<h2>Expiration Report</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="number" name="daysAhead" value="@ViewBag.DaysAhead" class="form-control" style="max-width:120px" />
+    </div>
+    <div class="col-auto">
+        <select name="branchId" class="form-select">
+            <option value="">All Branches</option>
+            @foreach (var branch in branches)
+            {
+                <option value="@branch.Id" selected="@(ViewBag.BranchId != null && (int)ViewBag.BranchId == branch.Id)">@branch.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Filter</button>
+    </div>
+</form>
+
+<p><strong>@Model.Count batch(es)</strong> expiring within @ViewBag.DaysAhead day(s) (or already expired).</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Branch</th>
+            <th>Product</th>
+            <th>Batch</th>
+            <th>Expiration Date</th>
+            <th>Qty Remaining</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var batch in Model)
+    {
+        var isExpired = batch.ExpirationDate.HasValue && batch.ExpirationDate.Value.Date < DateTime.Today;
+        <tr>
+            <td>@batch.Branch.Name</td>
+            <td>@batch.Product.Name</td>
+            <td>@batch.BatchNumber</td>
+            <td>
+                @batch.ExpirationDate?.ToString("d")
+                @if (isExpired)
+                {
+                    <span class="badge bg-danger ms-1">Expired</span>
+                }
+            </td>
+            <td>@batch.QuantityRemaining</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

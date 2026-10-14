@@ -1,0 +1,110 @@
+@model Payroll
+@{
+    ViewData["Title"] = "Payroll Details";
+}
+
+<h2>Payroll &mdash; @Model.Employee.FirstName @Model.Employee.LastName</h2>
+<p>Period: @Model.PeriodStart.ToString("d") &ndash; @Model.PeriodEnd.ToString("d")</p>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<p>
+    Status:
+    @if (Model.Status == PayrollStatus.Finalized)
+    {
+        <span class="badge bg-success">Finalized</span>
+    }
+    else
+    {
+        <span class="badge bg-secondary">Draft</span>
+    }
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Amount</th>
+            @if (Model.Status == PayrollStatus.Draft)
+            {
+                <th></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Basic Pay</td>
+            <td>Semi-monthly basic pay</td>
+            <td>@Model.BasicPay.ToString("N2")</td>
+            @if (Model.Status == PayrollStatus.Draft)
+            {
+                <td></td>
+            }
+        </tr>
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>@item.ItemType</td>
+            <td>@item.Description</td>
+            <td>@item.Amount.ToString("N2")</td>
+            @if (Model.Status == PayrollStatus.Draft)
+            {
+                <td>
+                    <form asp-action="RemoveItem" method="post" class="d-inline">
+                        <input type="hidden" name="payrollItemId" value="@item.Id" />
+                        <input type="hidden" name="payrollId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                    </form>
+                </td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Gross Pay</dt>
+    <dd class="col-sm-9">@Model.GrossPay.ToString("N2")</dd>
+
+    <dt class="col-sm-3">Total Deductions</dt>
+    <dd class="col-sm-9">@Model.TotalDeductions.ToString("N2")</dd>
+
+    <dt class="col-sm-3">Net Pay</dt>
+    <dd class="col-sm-9"><strong>@Model.NetPay.ToString("N2")</strong></dd>
+</dl>
+
+@if (Model.Status == PayrollStatus.Draft)
+{
+    <h4>Add Earning / Deduction</h4>
+    <form asp-action="AddItem" method="post" class="row g-2 mb-3">
+        <input type="hidden" name="payrollId" value="@Model.Id" />
+        <div class="col-auto">
+            <select name="ItemType" class="form-select" asp-items="Html.GetEnumSelectList<PayrollItemType>()"></select>
+        </div>
+        <div class="col-auto">
+            <input type="text" name="Description" class="form-control" placeholder="Description" required />
+        </div>
+        <div class="col-auto">
+            <input type="number" name="Amount" step="0.01" class="form-control" placeholder="Amount" required />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">Add</button>
+        </div>
+    </form>
+
+    <form asp-action="Finalize" asp-route-id="@Model.Id" method="post">
+        <button type="submit" class="btn btn-success">Finalize Payroll</button>
+    </form>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>

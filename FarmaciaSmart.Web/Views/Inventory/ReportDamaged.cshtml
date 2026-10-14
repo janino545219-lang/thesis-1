@@ -1,0 +1,39 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Inventories.DamagedItemViewModel
+@{
+    ViewData["Title"] = "Report Damaged Item";
+}
+
+<h2>Report Damaged Item</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="ReportDamaged" method="post">
+    <div class="mb-3">
+        <label asp-for="InventoryBatchId" class="form-label"></label>
+        <select asp-for="InventoryBatchId" class="form-select">
+            <option value="">-- Select batch --</option>
+            @foreach (var batch in Model.AvailableBatches)
+            {
+                <option value="@batch.Id">
+                    @batch.Product.Name &mdash; @batch.Branch.Name &mdash; @batch.BatchNumber (Remaining: @batch.QuantityRemaining)
+                </option>
+            }
+        </select>
+        <span asp-validation-for="InventoryBatchId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Quantity" class="form-label"></label>
+        <input asp-for="Quantity" class="form-control" type="number" />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Reason" class="form-label"></label>
+        <textarea asp-for="Reason" class="form-control" placeholder="e.g. Damaged during delivery"></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Record Damage</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

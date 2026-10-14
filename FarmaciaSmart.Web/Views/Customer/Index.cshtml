@@ -1,0 +1,45 @@
+@using FarmaciaSmart.Web.Models.Entities
+@model List<Customer>
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<h2>Customers</h2>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Contact Number</th>
+            <th>Preferred Branch</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var c in Model)
+    {
+        <tr>
+            <td>@c.User.FirstName @c.User.LastName</td>
+            <td>@c.User.Email</td>
+            <td>@c.ContactNumber</td>
+            <td>@(c.PreferredBranch?.Name ?? "—")</td>
+            <td>
+                @{
+                    var badgeClass = c.Status switch
+                    {
+                        CustomerStatus.Active => "bg-success",
+                        CustomerStatus.Suspended => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+                }
+                <span class="badge @badgeClass">@c.Status</span>
+            </td>
+            <td><a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

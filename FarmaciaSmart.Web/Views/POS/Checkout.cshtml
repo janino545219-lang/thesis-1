@@ -1,0 +1,66 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Sales.CheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h2>Checkout</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Line Total</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.CartItems)
+    {
+        <tr>
+            <td>@item.ProductName</td>
+            <td>@item.Quantity</td>
+            <td>@item.UnitPrice.ToString("N2")</td>
+            <td>@item.LineTotal.ToString("N2")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+
+<form asp-action="Checkout" method="post">
+    <div class="form-check mb-3">
+        <input asp-for="ApplySeniorPwdDiscount" class="form-check-input" />
+        <label asp-for="ApplySeniorPwdDiscount" class="form-check-label"></label>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CustomerContactNumber" class="form-label"></label>
+        <input asp-for="CustomerContactNumber" class="form-control" />
+        <span asp-validation-for="CustomerContactNumber" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="PaymentMethod" class="form-label"></label>
+            <select asp-for="PaymentMethod" class="form-select" asp-items="Html.GetEnumSelectList<PaymentMethod>()"></select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="AmountTendered" class="form-label"></label>
+            <input asp-for="AmountTendered" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="AmountTendered" class="text-danger"></span>
+        </div>
+    </div>
+
+    <p>Subtotal: @Model.SubTotal.ToString("N2")</p>
+    <p>Discount: @Model.DiscountAmount.ToString("N2")</p>
+    <p><strong>Total Due: @Model.TotalAmount.ToString("N2")</strong></p>
+
+    <button type="submit" class="btn btn-success">Complete Sale</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

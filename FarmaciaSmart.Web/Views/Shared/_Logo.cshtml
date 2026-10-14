@@ -1,0 +1,35 @@
+@*
+    Reusable Logo partial view.
+    Parameters (via ViewData):
+      - variant : "full" (default) or "icon"
+      - height  : int, display height in px (default 44)
+      - href    : string, link target (default "/")
+*@
+@{
+    var variant = ViewData["variant"]?.ToString() ?? "full";
+    var height = ViewData["height"] is int h ? h : 44;
+    var href = ViewData["href"]?.ToString() ?? "/";
+
+    // Dimensions: logo-full.png is 163x44, logo-icon.png is 36x36
+    var isIcon = variant == "icon";
+    var src = isIcon ? "/images/brand/logo-icon.png" : "/images/brand/logo-full.png";
+    var srcset = isIcon
+        ? "/images/brand/logo-icon.png 1x, /images/brand/logo-icon@2x.png 2x"
+        : "/images/brand/logo-full.png 1x, /images/brand/logo-full@2x.png 2x";
+
+    // Compute width from known aspect ratios
+    // Full: 163x44 → ratio 3.704, Icon: 36x36 → ratio 1.0
+    var aspectRatio = isIcon ? 1.0 : 163.0 / 44.0;
+    var width = (int)Math.Round(height * aspectRatio);
+}
+
+<a href="@href" class="landing-logo-link" aria-label="Farmacia San Antonio — home">
+    <img src="@src"
+         srcset="@srcset"
+         alt="Farmacia San Antonio"
+         width="@width"
+         height="@height"
+         loading="eager"
+         fetchpriority="high"
+         class="landing-logo-img" />
+</a>

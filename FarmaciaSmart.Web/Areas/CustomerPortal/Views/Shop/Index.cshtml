@@ -1,0 +1,126 @@
+@using FarmaciaSmart.Web.Areas.CustomerPortal.Models.ViewModels
+@model ShopFilterViewModel
+@{
+    ViewData["Title"] = "Shop";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/shop.css" asp-append-version="true" />
+}
+
+<div class="shop-page">
+    <div class="shop-toolbar d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <h4 class="mb-0">Shop <small class="text-muted fs-6">&mdash; pickup at @Model.BranchName</small></h4>
+
+        <form method="get" class="d-flex flex-grow-1 justify-content-center" style="max-width:480px;">
+            <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+            <input type="hidden" name="minPrice" value="@Model.MinPrice" />
+            <input type="hidden" name="maxPrice" value="@Model.MaxPrice" />
+            @foreach (var b in Model.Brands)
+            {
+                <input type="hidden" name="brands" value="@b" />
+            }
+            <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control shop-search-input" placeholder="Search products..." />
+            <button type="submit" class="btn shop-search-btn">Search</button>
+        </form>
+
+        <div>
+            <a asp-action="Cart" class="btn btn-shop-outline">Cart <span class="badge shop-cart-badge">@Model.CartItemCount</span></a>
+            <a asp-action="Orders" class="btn btn-outline-secondary">My Orders</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] is string success)
+    {
+        <div class="alert alert-success">@success</div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-3">
+            <div class="shop-sidebar">
+                <form method="get">
+                    <input type="hidden" name="searchTerm" value="@Model.SearchTerm" />
+
+                    <h6>Category</h6>
+                    <select name="categoryId" class="form-select mb-3" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        @foreach (var c in Model.Categories)
+                        {
+                            <option value="@c.Id" selected="@(Model.CategoryId == c.Id)">@c.Name</option>
+                        }
+                    </select>
+
+                    <h6>Price Range</h6>
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <input type="number" step="0.01" name="minPrice" value="@Model.MinPrice" class="form-control form-control-sm" placeholder="Min" />
+                        </div>
+                        <div class="col">
+                            <input type="number" step="0.01" name="maxPrice" value="@Model.MaxPrice" class="form-control form-control-sm" placeholder="Max" />
+                        </div>
+                    </div>
+
+                    @if (Model.AvailableBrands.Count > 0)
+                    {
+                        <h6>Brands</h6>
+                        <div class="mb-3">
+                            @foreach (var brand in Model.AvailableBrands)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="brands" value="@brand" id="brand-@brand.GetHashCode()"
+                                           checked="@Model.Brands.Contains(brand)" />
+                                    <label class="form-check-label" for="brand-@brand.GetHashCode()">@brand</label>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <button type="submit" class="btn btn-shop-primary w-100 mb-2">Update</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm w-100">Reset Filters</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-9">
+            @if (Model.Products.Count == 0)
+            {
+                <p class="text-muted">No products match your filters right now.</p>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                    @foreach (var p in Model.Products)
+                    {
+                        <div class="col">
+                            <div class="shop-product-card">
+                                <div class="shop-product-thumb">&#128138;</div>
+                                <div class="shop-product-body">
+                                    @if (!string.IsNullOrEmpty(p.Brand))
+                                    {
+                                        <div class="shop-product-brand">@p.Brand</div>
+                                    }
+                                    <div class="shop-product-name">@p.Name</div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="shop-price">@p.Price.ToString("N2")</span>
+                                        <form asp-action="AddToCart" method="post">
+                                            <input type="hidden" name="productId" value="@p.ProductId" />
+                                            <input type="hidden" name="productName" value="@p.Name" />
+                                            <input type="hidden" name="unitPrice" value="@p.Price" />
+                                            <input type="hidden" name="quantity" value="1" />
+                                            <button type="submit" class="btn btn-sm btn-shop-primary">Add to cart</button>
+                                        </form>
+                                    </div>
+                                    <div class="form-text">@p.QuantityAvailable in stock</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

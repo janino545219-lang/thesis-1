@@ -1,0 +1,112 @@
+@model Recommendation
+@{
+    ViewData["Title"] = "Your Recommendation";
+}
+
+<h2>Your Recommendation</h2>
+
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<div class="alert alert-warning">
+    These are AI-generated <strong>preliminary suggestions</strong> based on pharmacist-approved guidance.
+    @if (Model.ReviewStatus == RecommendationReviewStatus.PendingReview)
+    {
+        <text>They are still awaiting pharmacist review.</text>
+    }
+    else if (Model.ReviewStatus == RecommendationReviewStatus.Approved || Model.ReviewStatus == RecommendationReviewStatus.Modified)
+    {
+        <text>They have been reviewed by a pharmacist.</text>
+    }
+    They do not replace professional pharmacist consultation.
+</div>
+
+<p>Concern: <strong>@Model.Category.Name</strong></p>
+<p>
+    Status:
+    @switch (Model.ReviewStatus)
+    {
+        case RecommendationReviewStatus.PendingReview:
+            <span class="badge bg-secondary">Pending Pharmacist Review</span>
+            break;
+        case RecommendationReviewStatus.Approved:
+            <span class="badge bg-success">Pharmacist Approved</span>
+            break;
+        case RecommendationReviewStatus.Modified:
+            <span class="badge bg-info text-dark">Pharmacist Modified</span>
+            break;
+        case RecommendationReviewStatus.Rejected:
+            <span class="badge bg-danger">Rejected by Pharmacist</span>
+            break;
+    }
+</p>
+
+@if (Model.ReviewStatus != RecommendationReviewStatus.Rejected)
+{
+    <div class="row">
+    @foreach (var item in Model.Items.OrderBy(i => i.Rank))
+    {
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Product.Name</h5>
+                    <p class="card-text">@item.Explanation</p>
+                    @if (!string.IsNullOrEmpty(item.Warning))
+                    {
+                        <p class="card-text text-danger"><small>&#9888; @item.Warning</small></p>
+                    }
+                    <p class="card-text"><small class="text-muted">Price: @item.Product.Price.ToString("N2")</small></p>
+
+                    @if (item.Feedback is not null)
+                    {
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Your feedback: @(item.Feedback.Rating == FeedbackRating.Helpful ? "Helpful" : "Not Helpful")
+                            </small>
+                        </p>
+                    }
+                    else
+                    {
+                        <form asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Feedback" method="post" class="d-flex gap-1">
+                            <input type="hidden" name="recommendationItemId" value="@item.Id" />
+                            <input type="hidden" name="recommendationId" value="@Model.Id" />
+                            <input type="hidden" name="rating" value="@((int)FeedbackRating.Helpful)" />
+                            <button type="submit" class="btn btn-sm btn-outline-success">&#128077; Helpful</button>
+                        </form>
+                        <form asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Feedback" method="post" class="d-flex gap-1 mt-1">
+                            <input type="hidden" name="recommendationItemId" value="@item.Id" />
+                            <input type="hidden" name="recommendationId" value="@Model.Id" />
+                            <input type="hidden" name="rating" value="@((int)FeedbackRating.NotHelpful)" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">&#128078; Not Helpful</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    </div>
+}
+else
+{
+    <p>A pharmacist reviewed this request and did not approve these suggestions. Please visit the pharmacy for direct assistance.</p>
+}
+
+@if (Model.ReviewStatus != RecommendationReviewStatus.Rejected)
+{
+    <hr />
+    <h4>Not quite right?</h4>
+    <form asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Refine" method="post" class="d-flex gap-2 mb-3">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="text" name="message" class="form-control" placeholder="e.g. Those are too expensive" />
+        <button type="submit" class="btn btn-outline-primary text-nowrap">Refine Suggestions</button>
+    </form>
+}
+
+<a asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Index" class="btn btn-secondary">Ask Again</a>
+<a asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="History" class="btn btn-outline-secondary">My History</a>

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="FarmaciaSmart.Tests/FarmaciaSmart.Tests.csproj" />
+  <Project Path="FarmaciaSmart.Web/FarmaciaSmart.Web.csproj" />
+</Solution>

@@ -1,0 +1,203 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Analytics.AnalyticsDashboardViewModel
+@{
+    ViewData["Title"] = "Analytics Dashboard";
+
+    string DeltaClass(decimal? v) => v is null ? "stat-delta-none" : v >= 0 ? "stat-delta-up" : "stat-delta-down";
+    string DeltaText(decimal? v) => v is null ? "New" : $"{(v >= 0 ? "+" : "")}{v:0.0}%";
+
+    var maxBranchSales = Model.SalesByBranch.Count > 0 ? Model.SalesByBranch.Max(b => b.TotalAmount) : 0m;
+    var maxProductQty = Model.TopProducts.Count > 0 ? Model.TopProducts.Max(p => p.QuantitySold) : 0;
+
+    var heatLookup = Model.BusyPeriods.ToDictionary(p => (p.DayOfWeek, p.Hour), p => p.SaleCount);
+    var maxHeat = Model.BusyPeriods.Count > 0 ? Model.BusyPeriods.Max(p => p.SaleCount) : 0;
+    var days = new[] { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
+    var hours = Enumerable.Range(8, 13).ToArray();
+
+    string HeatClass(int count)
+    {
+        if (maxHeat == 0 || count == 0) return "heat-0";
+        var ratio = (double)count / maxHeat;
+        return ratio switch { <= 0.25 => "heat-1", <= 0.5 => "heat-2", <= 0.75 => "heat-3", _ => "heat-4" };
+    }
+
+    string FormatHour(int h) => h == 12 ? "12pm" : h > 12 ? $"{h - 12}pm" : $"{h}am";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/analytics.css" asp-append-version="true" />
+}
+
+<div class="analytics-page">
+    <h2 class="mb-4">Analytics</h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card-primary">
+                <div class="stat-label">Total Sales (This Month)</div>
+                <div class="stat-value">@Model.Summary.TotalSalesThisMonth.ToString("N2")</div>
+                <div class="@DeltaClass(Model.Summary.SalesPercentChange)">@DeltaText(Model.Summary.SalesPercentChange) vs last month</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-label">Transactions</div>
+                <div class="stat-value">@Model.Summary.TransactionsThisMonth</div>
+                <div class="@DeltaClass(Model.Summary.TransactionsPercentChange)">@DeltaText(Model.Summary.TransactionsPercentChange)</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-label">Avg Order Value</div>
+                <div class="stat-value">@Model.Summary.AvgOrderValueThisMonth.ToString("N2")</div>
+                <div class="@DeltaClass(Model.Summary.AvgOrderValuePercentChange)">@DeltaText(Model.Summary.AvgOrderValuePercentChange)</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-label">Low Stock Items</div>
+                <div class="stat-value">@Model.Summary.LowStockItemCount</div>
+                <a asp-controller="Report" asp-action="LowStock" class="stat-delta-none text-decoration-none">View report &rarr;</a>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-label">New Customers</div>
+                <div class="stat-value">@Model.Summary.NewCustomersThisMonth</div>
+                <div class="@DeltaClass(Model.Summary.NewCustomersPercentChange)">@DeltaText(Model.Summary.NewCustomersPercentChange)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-5">
+            <div class="row g-3 h-100">
+                <div class="col-12">
+                    <div class="analytics-card">
+                        <h6 class="mb-3">Top Branch</h6>
+                        @if (Model.SalesByBranch.Count == 0)
+                        {
+                            <p class="text-muted small mb-0">No completed sales yet.</p>
+                        }
+                        else
+                        {
+                            @foreach (var (branch, i) in Model.SalesByBranch.OrderByDescending(b => b.TotalAmount).Select((b, i) => (b, i)))
+                            {
+                                <div class="rank-list-item">
+                                    <div class="rank-list-badge">@(i + 1)</div>
+                                    <div class="rank-list-body">
+                                        <div class="rank-list-name">@branch.BranchName</div>
+                                        <div class="rank-list-bar">
+                                            <div class="rank-list-bar-fill" style="width:@(maxBranchSales == 0 ? 0 : (branch.TotalAmount / maxBranchSales * 100))%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="rank-list-value">@branch.TotalAmount.ToString("N0")</div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="analytics-card">
+                        <h6 class="mb-3">Top Products</h6>
+                        @if (Model.TopProducts.Count == 0)
+                        {
+                            <p class="text-muted small mb-0">No completed sales yet.</p>
+                        }
+                        else
+                        {
+                            @foreach (var (product, i) in Model.TopProducts.Select((p, i) => (p, i)))
+                            {
+                                <div class="rank-list-item">
+                                    <div class="rank-list-badge">@(i + 1)</div>
+                                    <div class="rank-list-body">
+                                        <div class="rank-list-name">@product.ProductName</div>
+                                        <div class="rank-list-bar">
+                                            <div class="rank-list-bar-fill" style="width:@(maxProductQty == 0 ? 0 : (product.QuantitySold * 100.0 / maxProductQty))%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="rank-list-value">@product.QuantitySold units</div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-7">
+            <div class="analytics-card h-100">
+                <h6 class="mb-3">Sales Trend (Last 30 Days)</h6>
+                <canvas id="salesTrendChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-8">
+            <div class="analytics-card">
+                <h6 class="mb-3">Busy Periods <small class="text-muted">(completed sales by day &amp; hour, last 90 days)</small></h6>
+                @if (Model.BusyPeriods.Count == 0)
+                {
+                    <p class="text-muted small mb-0">Not enough sales data yet to show a pattern.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="heatmap-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    @foreach (var h in hours)
+                                    {
+                                        <th>@FormatHour(h)</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var day in days)
+                            {
+                                <tr>
+                                    <td class="heatmap-day-label">@day.ToString().Substring(0, 3)</td>
+                                    @foreach (var h in hours)
+                                    {
+                                        var count = heatLookup.TryGetValue((day, h), out var c) ? c : 0;
+                                        <td>
+                                            <div class="heatmap-cell @HeatClass(count)" title="@day @FormatHour(h): @count sale(s)"></div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="analytics-card h-100">
+                <h6 class="mb-3">Low Stock by Branch</h6>
+                <canvas id="lowStockChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const salesTrendLabels = @Html.Raw(Json.Serialize(Model.SalesTrend.Select(p => p.Date.ToString("MM/dd"))));
+    const salesTrendData = @Html.Raw(Json.Serialize(Model.SalesTrend.Select(p => p.TotalAmount)));
+    new Chart(document.getElementById('salesTrendChart'), {
+        type: 'line',
+        data: { labels: salesTrendLabels, datasets: [{ label: 'Sales', data: salesTrendData, borderColor: '#2f6fed', backgroundColor: 'rgba(47,111,237,0.08)', fill: true, tension: 0.3 }] },
+        options: { plugins: { legend: { display: false } } }
+    });
+
+    const lowStockLabels = @Html.Raw(Json.Serialize(Model.LowStockByBranch.Select(p => p.BranchName)));
+    const lowStockData = @Html.Raw(Json.Serialize(Model.LowStockByBranch.Select(p => p.LowStockCount)));
+    new Chart(document.getElementById('lowStockChart'), {
+        type: 'bar',
+        data: { labels: lowStockLabels, datasets: [{ label: 'Low Stock Items', data: lowStockData, backgroundColor: '#d9455f' }] },
+        options: { plugins: { legend: { display: false } } }
+    });
+</script>
+}

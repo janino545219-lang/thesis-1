@@ -1,0 +1,163 @@
+/* Analytics dashboard -- scoped to this page only. */
+
+.analytics-page {
+    background: #f6f8fb;
+    padding: 1.5rem 1.25rem 3rem;
+}
+
+.analytics-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(20, 30, 60, 0.06);
+    padding: 1.25rem;
+    height: 100%;
+}
+
+.stat-card-primary {
+    background: linear-gradient(160deg, #1a2333, #1a5276);
+    color: #fff;
+    border-radius: 14px;
+    padding: 1.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.stat-card-primary .stat-label {
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+.stat-card-primary .stat-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(20, 30, 60, 0.06);
+    padding: 1rem 1.15rem;
+    height: 100%;
+}
+
+.stat-card .stat-label {
+    color: #6b7383;
+    font-size: 0.8rem;
+}
+
+.stat-card .stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a2333;
+}
+
+.stat-delta-up {
+    color: #1f9d55;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.stat-delta-down {
+    color: #d9455f;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.stat-delta-none {
+    color: #9aa2b1;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.rank-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f0f2f6;
+}
+
+.rank-list-item:last-child {
+    border-bottom: none;
+}
+
+.rank-list-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #eef1f6;
+    color: #495467;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.rank-list-body {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.rank-list-name {
+    font-weight: 600;
+    color: #1a2333;
+    font-size: 0.9rem;
+}
+
+.rank-list-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: #eef1f6;
+    margin-top: 0.3rem;
+    overflow: hidden;
+}
+
+.rank-list-bar-fill {
+    height: 100%;
+    background: #2f6fed;
+    border-radius: 999px;
+}
+
+.rank-list-value {
+    font-weight: 700;
+    color: #1a2333;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.heatmap-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 4px;
+    font-size: 0.75rem;
+}
+
+.heatmap-table th {
+    font-weight: 500;
+    color: #6b7383;
+    text-align: center;
+    padding-bottom: 0.25rem;
+}
+
+.heatmap-table td.heatmap-day-label {
+    color: #6b7383;
+    text-align: right;
+    padding-right: 0.5rem;
+    white-space: nowrap;
+}
+
+.heatmap-cell {
+    width: 28px;
+    height: 24px;
+    border-radius: 4px;
+}
+
+.heat-0 { background: #eef1f6; }
+.heat-1 { background: #c9dcff; }
+.heat-2 { background: #7fa9f5; }
+.heat-3 { background: #2f6fed; }
+.heat-4 { background: #12245c; }

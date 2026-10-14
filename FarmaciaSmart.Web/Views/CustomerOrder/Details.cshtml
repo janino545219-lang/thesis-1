@@ -1,0 +1,50 @@
+@using FarmaciaSmart.Web.Models.Entities
+@model CustomerOrder
+@{
+    ViewData["Title"] = "Customer Order Details";
+}
+
+<h2>Order @Model.OrderNumber</h2>
+<p>Customer: @Model.Customer.User.FirstName @Model.Customer.User.LastName (@Model.Customer.User.Email)</p>
+<p>Pickup branch: @Model.Branch.Name &mdash; Status: <strong>@Model.Status</strong></p>
+@if (!string.IsNullOrWhiteSpace(Model.Notes))
+{
+    <p>Customer notes: @Model.Notes</p>
+}
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Line Total</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>@item.Product.Name</td>
+            <td>@item.Quantity</td>
+            <td>@item.UnitPriceAtOrderTime.ToString("N2")</td>
+            <td>@((item.UnitPriceAtOrderTime * item.Quantity).ToString("N2"))</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+<p class="text-end"><strong>Total: @Model.TotalAmount.ToString("N2")</strong></p>
+
+@if (Model.Status == CustomerOrderStatus.Pending)
+{
+    <form asp-action="Fulfill" asp-route-id="@Model.Id" method="post" class="d-inline">
+        <button type="submit" class="btn btn-success">Mark Fulfilled (customer picked up &amp; paid via POS)</button>
+    </form>
+    <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+        <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
+    </form>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>

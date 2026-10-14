@@ -1,0 +1,61 @@
+@model List<FarmaciaSmart.Web.Models.Entities.Branch>
+@{
+    ViewData["Title"] = "Branches";
+}
+
+<h2>Branches</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Branch</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Address</th>
+            <th>Contact Number</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var branch in Model)
+    {
+        <tr>
+            <td>@branch.Name</td>
+            <td>@branch.Code</td>
+            <td>@branch.Address</td>
+            <td>@branch.ContactNumber</td>
+            <td>
+                @if (branch.IsActive)
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Inactive</span>
+                }
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@branch.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                <a asp-action="Edit" asp-route-id="@branch.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="ToggleActive" asp-route-id="@branch.Id" method="post" class="d-inline">
+                    <input type="hidden" name="isActive" value="@(!branch.IsActive)" />
+                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                        @(branch.IsActive ? "Deactivate" : "Activate")
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

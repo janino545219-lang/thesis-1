@@ -1,0 +1,202 @@
+/* Customer Portal auth pages (Login/Register) -- scoped via _AuthLayout, doesn't touch the rest of the app. */
+
+body.auth-body {
+    background: #eef0f3;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(20, 30, 60, 0.12);
+    display: flex;
+    overflow: hidden;
+    max-width: 960px;
+    width: 100%;
+    min-height: 620px;
+}
+
+.auth-visual {
+    flex: 1 1 46%;
+    background: linear-gradient(160deg, rgba(20, 36, 54, 0.82) 0%, rgba(18, 62, 72, 0.86) 100%),
+                url('/images/pharmacy-store.webp') center center / cover no-repeat;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2.5rem;
+    position: relative;
+}
+
+.auth-brand-badge {
+    display: inline-flex;
+    background: #ffffff;
+    padding: 0.65rem 1.15rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+    width: fit-content;
+}
+
+.auth-brand-badge .landing-logo-link {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+}
+
+.auth-brand-badge .landing-logo-link:focus-visible {
+    outline: 2px solid #C62828;
+    outline-offset: 2px;
+}
+
+.auth-brand-badge .landing-logo-img {
+    display: block;
+    height: auto;
+}
+
+.auth-visual-icon {
+    display: none;
+}
+
+.auth-visual-brand {
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.auth-visual-highlights {
+    background: rgba(12, 24, 38, 0.68);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+}
+
+.auth-visual-highlights ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
+}
+
+.auth-visual-highlights li {
+    padding: 0.3rem 0;
+    font-size: 0.95rem;
+}
+
+.auth-form-side {
+    flex: 1 1 54%;
+    padding: 3rem 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-audience-switch {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #9aa2b1;
+    margin-bottom: 1rem;
+}
+
+.auth-audience-switch a {
+    color: #6b7383;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-audience-switch a:hover {
+    color: #2f6fed;
+    text-decoration: underline;
+}
+
+.auth-audience-switch .active {
+    color: #2f6fed;
+    font-weight: 700;
+}
+
+.auth-audience-switch .divider {
+    margin: 0 0.4rem;
+}
+
+.auth-tabs {
+    display: inline-flex;
+    background: #f1f3f6;
+    border-radius: 999px;
+    padding: 4px;
+    margin: 0 auto 2rem;
+}
+
+.auth-tab {
+    border: none;
+    background: transparent;
+    padding: 0.4rem 1.25rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #5b6472;
+    text-decoration: none;
+}
+
+.auth-tab.active {
+    background: #1a2333;
+    color: #fff;
+}
+
+.auth-heading {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
+.auth-heading h2 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.auth-heading p {
+    color: #6b7383;
+    margin: 0;
+}
+
+.auth-form-side .form-control,
+.auth-form-side .form-select {
+    border-radius: 10px;
+    border-color: #e2e5ea;
+    padding: 0.6rem 0.85rem;
+}
+
+.auth-submit-btn {
+    background: #1a2333;
+    border-color: #1a2333;
+    border-radius: 10px;
+    padding: 0.65rem;
+    font-weight: 600;
+}
+
+.auth-submit-btn:hover {
+    background: #0f1521;
+    border-color: #0f1521;
+}
+
+.auth-footer-link {
+    text-align: center;
+    margin-top: 1.25rem;
+    color: #6b7383;
+}
+
+@media (max-width: 767.98px) {
+    .auth-card {
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .auth-visual {
+        padding: 2rem;
+    }
+
+    .auth-form-side {
+        padding: 2rem;
+    }
+}

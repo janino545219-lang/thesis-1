@@ -1,0 +1,35 @@
+@model IReadOnlyList<FarmaciaSmart.Web.Models.ViewModels.Landing.StepItem>
+
+@{
+    var iconMap = new Dictionary<int, string>
+    {
+        { 1, "message-circle" },
+        { 2, "sparkles" },
+        { 3, "clipboard-check" }
+    };
+}
+
+<section class="landing-how-it-works" id="how-it-works" aria-labelledby="how-heading">
+    <h2 id="how-heading" class="landing-section-heading reveal">How It Works</h2>
+    <div class="landing-steps">
+        @foreach (var step in Model)
+        {
+            var iconName = iconMap.GetValueOrDefault(step.Number, "check-circle");
+            var isLast = step.Number == Model.Count;
+
+            <div class="landing-step reveal" style="--reveal-delay: @((step.Number - 1) * 150)ms">
+                <div class="landing-step-number" aria-hidden="true">@step.Number</div>
+                <div class="landing-step-icon-box" role="img" aria-label="@step.Title icon">
+                    <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", iconName } })' />
+                </div>
+                <h3>@step.Title</h3>
+                <p>@step.Description</p>
+            </div>
+
+            if (!isLast)
+            {
+                <div class="landing-step-connector" aria-hidden="true"></div>
+            }
+        }
+    </div>
+</section>

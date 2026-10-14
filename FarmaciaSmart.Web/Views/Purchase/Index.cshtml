@@ -1,0 +1,54 @@
+@using FarmaciaSmart.Web.Models.Entities
+@model List<PurchaseOrder>
+@{
+    ViewData["Title"] = "Purchase Orders";
+}
+
+<h2>Purchase Orders</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create Purchase Order</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Order #</th>
+            <th>Supplier</th>
+            <th>Branch</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var p in Model)
+    {
+        <tr>
+            <td>@p.OrderNumber</td>
+            <td>@p.Supplier.Name</td>
+            <td>@p.Branch.Name</td>
+            <td>@p.TotalAmount.ToString("N2")</td>
+            <td>
+                @{
+                    var badgeClass = p.Status switch
+                    {
+                        PurchaseOrderStatus.Draft => "bg-secondary",
+                        PurchaseOrderStatus.Ordered => "bg-info text-dark",
+                        PurchaseOrderStatus.PartiallyReceived => "bg-warning text-dark",
+                        PurchaseOrderStatus.Received => "bg-success",
+                        PurchaseOrderStatus.Cancelled => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+                }
+                <span class="badge @badgeClass">@p.Status</span>
+            </td>
+            <td>@p.CreatedAt.ToString("g")</td>
+            <td><a asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

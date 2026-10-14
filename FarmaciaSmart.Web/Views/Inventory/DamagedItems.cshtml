@@ -1,0 +1,41 @@
+@model List<DamagedItem>
+@{
+    ViewData["Title"] = "Damaged Items";
+}
+
+<h2>Damaged Items</h2>
+
+<p>
+    <a asp-action="ReportDamaged" class="btn btn-primary">Report Damaged Item</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to Stock</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Reported</th>
+            <th>Branch</th>
+            <th>Product</th>
+            <th>Batch</th>
+            <th>Quantity</th>
+            <th>Reason</th>
+            <th>Reported By</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.ReportedAt.ToString("g")</td>
+            <td>@item.Branch.Name</td>
+            <td>@item.Product.Name</td>
+            <td>@item.InventoryBatch?.BatchNumber</td>
+            <td>@item.Quantity</td>
+            <td>@item.Reason</td>
+            <td>@item.ReportedByUser.Email</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

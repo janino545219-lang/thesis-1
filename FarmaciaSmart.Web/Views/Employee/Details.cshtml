@@ -1,0 +1,38 @@
+@model Employee
+@{
+    ViewData["Title"] = "Employee Details";
+}
+
+<h2>Employee Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.FirstName @Model.LastName</dd>
+
+    <dt class="col-sm-3">Position</dt>
+    <dd class="col-sm-9">@Model.Position</dd>
+
+    <dt class="col-sm-3">Branch</dt>
+    <dd class="col-sm-9">@Model.Branch.Name</dd>
+
+    <dt class="col-sm-3">Employment Status</dt>
+    <dd class="col-sm-9">@Model.EmploymentStatus</dd>
+
+    <dt class="col-sm-3">Contact Number</dt>
+    <dd class="col-sm-9">@Model.ContactNumber</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Hire Date</dt>
+    <dd class="col-sm-9">@Model.HireDate.ToString("d")</dd>
+
+    <dt class="col-sm-3">Monthly Salary</dt>
+    <dd class="col-sm-9">@Model.MonthlySalary.ToString("N2")</dd>
+
+    <dt class="col-sm-3">System Account</dt>
+    <dd class="col-sm-9">@(Model.UserId is null ? "Not linked" : "Linked")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

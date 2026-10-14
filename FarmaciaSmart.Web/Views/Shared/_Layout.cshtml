@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FarmaciaSmart.Web</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-shell.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FarmaciaSmart.Web.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="app-sidebar" id="appSidebar">
+            <partial name="_SidebarNav" />
+        </aside>
+        <div class="app-sidebar-backdrop" id="appSidebarBackdrop"></div>
+
+        <div class="app-main">
+            <div class="app-topbar">
+                <button class="app-topbar-toggle" type="button" id="appSidebarToggle">
+                    &#9776;
+                </button>
+                <span class="fw-semibold">FarmaciaSmart</span>
+                <span></span>
+            </div>
+
+            <main role="main" class="app-content">
+                @RenderBody()
+            </main>
+
+            <footer class="app-footer">
+                &copy; 2026 - FarmaciaSmart.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var sidebar = document.getElementById('appSidebar');
+            var backdrop = document.getElementById('appSidebarBackdrop');
+            var toggle = document.getElementById('appSidebarToggle');
+
+            function closeSidebar() {
+                sidebar.classList.remove('is-open');
+                backdrop.classList.remove('is-open');
+            }
+
+            toggle.addEventListener('click', function () {
+                sidebar.classList.toggle('is-open');
+                backdrop.classList.toggle('is-open');
+            });
+
+            backdrop.addEventListener('click', closeSidebar);
+
+            sidebar.querySelectorAll('.nav-link').forEach(function (link) {
+                link.addEventListener('click', closeSidebar);
+            });
+        })();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

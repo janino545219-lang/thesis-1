@@ -1,0 +1,70 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Products.ProductViewModel
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<h2>Create Product</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label"></label>
+        <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+            <option value="">-- Select category --</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Brand" class="form-label"></label>
+            <input asp-for="Brand" class="form-control" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Unit" class="form-label"></label>
+            <input asp-for="Unit" class="form-control" placeholder="e.g. Piece, Box, Bottle" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Barcode" class="form-label"></label>
+            <input asp-for="Barcode" class="form-control" />
+            <span asp-validation-for="Barcode" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="ProductType" class="form-label"></label>
+            <select asp-for="ProductType" class="form-select" asp-items="Html.GetEnumSelectList<ProductType>()"></select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="LowStockThreshold" class="form-label"></label>
+            <input asp-for="LowStockThreshold" class="form-control" type="number" />
+            <span asp-validation-for="LowStockThreshold" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="RequiresExpirationTracking" class="form-check-input" />
+        <label asp-for="RequiresExpirationTracking" class="form-check-label"></label>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="IsRecommendationEligible" class="form-check-input" />
+        <label asp-for="IsRecommendationEligible" class="form-check-label"></label>
+        <div class="form-text">Preliminary eligibility gate only. Actual AI recommendations still require a pharmacist-approved rule.</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

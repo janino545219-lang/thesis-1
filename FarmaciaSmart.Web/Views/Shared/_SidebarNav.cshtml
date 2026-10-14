@@ -1,0 +1,178 @@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
+@using FarmaciaSmart.Web.Helpers
+@using FarmaciaSmart.Web.Models.Entities
+@using FarmaciaSmart.Web.Services.Interfaces
+@inject SignInManager<ApplicationUser> SignInManager
+@inject INotificationService NotificationServiceForBadge
+
+@{
+    var isAuthenticated = SignInManager.IsSignedIn(User);
+    var isCustomer = User.IsInRole(ApplicationRoles.Customer);
+    var isStaff = !isCustomer && ApplicationRoles.StaffRoles.Any(User.IsInRole);
+
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentArea = ViewContext.RouteData.Values["area"]?.ToString() ?? "";
+
+    string ActiveClass(string area, string controller, string? action = null)
+    {
+        var matches = string.Equals(currentArea, area, StringComparison.OrdinalIgnoreCase) &&
+                      string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) &&
+                      (action is null || string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase));
+        return matches ? "active" : "";
+    }
+
+    var primaryRole = new[]
+    {
+        ApplicationRoles.Administrator, ApplicationRoles.Pharmacist, ApplicationRoles.HrPayroll,
+        ApplicationRoles.InventoryStaff, ApplicationRoles.Cashier, ApplicationRoles.Customer
+    }.FirstOrDefault(User.IsInRole) ?? "User";
+
+    var firstName = User.FindFirstValue(ClaimTypes.GivenName) ?? "";
+    var lastName = User.FindFirstValue(ClaimTypes.Surname) ?? "";
+    var fullName = $"{firstName} {lastName}".Trim();
+    if (string.IsNullOrWhiteSpace(fullName))
+    {
+        fullName = User.Identity?.Name ?? "";
+    }
+    var initials = string.Concat((firstName.Length > 0 ? firstName[0].ToString() : ""), (lastName.Length > 0 ? lastName[0].ToString() : "")).ToUpperInvariant();
+    if (string.IsNullOrEmpty(initials) && fullName.Length > 0)
+    {
+        initials = fullName[0].ToString().ToUpperInvariant();
+    }
+}
+
+@if (isCustomer)
+{
+    <a class="app-sidebar-brand" asp-area="CustomerPortal" asp-controller="Dashboard" asp-action="Index">
+        <span>&#128138;</span> FarmaciaSmart
+    </a>
+}
+else
+{
+    <a class="app-sidebar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+        <span>&#128138;</span> FarmaciaSmart
+    </a>
+}
+
+@if (isAuthenticated)
+{
+    <div class="app-sidebar-profile">
+        <div class="app-sidebar-profile-avatar">@initials</div>
+        <div>
+            <div class="app-sidebar-profile-name">@fullName</div>
+            <div class="app-sidebar-profile-role">@primaryRole</div>
+        </div>
+    </div>
+}
+
+<ul class="app-sidebar-nav">
+    @if (!isCustomer)
+    {
+        <li><a class="nav-link @ActiveClass("", "Home", "Index")" asp-area="" asp-controller="Home" asp-action="Index"><span class="nav-icon">&#127968;</span> Home</a></li>
+    }
+
+    @if (isCustomer)
+    {
+        <li class="app-sidebar-section">My Account</li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Dashboard", "Index")" asp-area="CustomerPortal" asp-controller="Dashboard" asp-action="Index"><span class="nav-icon">&#128202;</span> My Dashboard</a></li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Profile", "Index")" asp-area="CustomerPortal" asp-controller="Profile" asp-action="Index"><span class="nav-icon">&#128100;</span> My Profile</a></li>
+
+        <li class="app-sidebar-section">Shop</li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Index")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Index"><span class="nav-icon">&#128722;</span> Shop</a></li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Cart")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Cart"><span class="nav-icon">&#128179;</span> My Cart</a></li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Orders")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Orders"><span class="nav-icon">&#128230;</span> My Orders</a></li>
+
+        <li class="app-sidebar-section">AI Recommendations</li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Recommendation", "Index")" asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Index"><span class="nav-icon">&#129502;</span> Ask AI</a></li>
+        <li><a class="nav-link @ActiveClass("CustomerPortal", "Recommendation", "History")" asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="History"><span class="nav-icon">&#128337;</span> History</a></li>
+    }
+    else if (isStaff)
+    {
+        @if (User.IsInRole(ApplicationRoles.Administrator))
+        {
+            <li class="app-sidebar-section">Overview</li>
+            <li><a class="nav-link @ActiveClass("", "Analytics", "Index")" asp-area="" asp-controller="Analytics" asp-action="Index"><span class="nav-icon">&#128200;</span> Analytics</a></li>
+            <li><a class="nav-link @ActiveClass("", "Branch", "Index")" asp-area="" asp-controller="Branch" asp-action="Index"><span class="nav-icon">&#127970;</span> Branches</a></li>
+            <li><a class="nav-link @ActiveClass("", "Customer", "Index")" asp-area="" asp-controller="Customer" asp-action="Index"><span class="nav-icon">&#128101;</span> Customers</a></li>
+            <li><a class="nav-link @ActiveClass("", "AuditLog", "Index")" asp-area="" asp-controller="AuditLog" asp-action="Index"><span class="nav-icon">&#128203;</span> Audit Log</a></li>
+        }
+
+        @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.InventoryStaff))
+        {
+            <li class="app-sidebar-section">Catalog &amp; Inventory</li>
+            <li><a class="nav-link @ActiveClass("", "Category", "Index")" asp-area="" asp-controller="Category" asp-action="Index"><span class="nav-icon">&#127991;</span> Categories</a></li>
+            <li><a class="nav-link @ActiveClass("", "Product", "Index")" asp-area="" asp-controller="Product" asp-action="Index"><span class="nav-icon">&#128137;</span> Products</a></li>
+            <li><a class="nav-link @ActiveClass("", "Supplier", "Index")" asp-area="" asp-controller="Supplier" asp-action="Index"><span class="nav-icon">&#128666;</span> Suppliers</a></li>
+            <li><a class="nav-link @ActiveClass("", "Purchase", "Index")" asp-area="" asp-controller="Purchase" asp-action="Index"><span class="nav-icon">&#128179;</span> Purchase Orders</a></li>
+            <li><a class="nav-link @ActiveClass("", "Inventory", "Index")" asp-area="" asp-controller="Inventory" asp-action="Index"><span class="nav-icon">&#128230;</span> Inventory</a></li>
+            <li><a class="nav-link @ActiveClass("", "Report", "SalesSummary")" asp-area="" asp-controller="Report" asp-action="SalesSummary"><span class="nav-icon">&#128196;</span> Reports</a></li>
+        }
+
+        @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.Cashier) || User.IsInRole(ApplicationRoles.InventoryStaff))
+        {
+            <li class="app-sidebar-section">Sales &amp; Orders</li>
+            @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.Cashier))
+            {
+                <li><a class="nav-link @ActiveClass("", "POS", "Index")" asp-area="" asp-controller="POS" asp-action="Index"><span class="nav-icon">&#128181;</span> POS</a></li>
+            }
+            <li><a class="nav-link @ActiveClass("", "CustomerOrder", "Index")" asp-area="" asp-controller="CustomerOrder" asp-action="Index"><span class="nav-icon">&#128717;</span> Customer Pre-Orders</a></li>
+        }
+
+        @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.Pharmacist))
+        {
+            <li class="app-sidebar-section">AI &amp; Recommendations</li>
+            <li><a class="nav-link @ActiveClass("", "RecommendationRule", "Index")" asp-area="" asp-controller="RecommendationRule" asp-action="Index"><span class="nav-icon">&#129502;</span> Recommendation Rules</a></li>
+            <li><a class="nav-link @ActiveClass("", "RecommendationReview", "Index")" asp-area="" asp-controller="RecommendationReview" asp-action="Index"><span class="nav-icon">&#9989;</span> Pending Reviews</a></li>
+        }
+
+        @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.HrPayroll))
+        {
+            <li class="app-sidebar-section">People &amp; Payroll</li>
+            <li><a class="nav-link @ActiveClass("", "Employee", "Index")" asp-area="" asp-controller="Employee" asp-action="Index"><span class="nav-icon">&#128100;</span> Employees</a></li>
+            <li><a class="nav-link @ActiveClass("", "Attendance", "Index")" asp-area="" asp-controller="Attendance" asp-action="Index"><span class="nav-icon">&#128197;</span> Attendance</a></li>
+            <li><a class="nav-link @ActiveClass("", "Payroll", "Index")" asp-area="" asp-controller="Payroll" asp-action="Index"><span class="nav-icon">&#128176;</span> Payroll</a></li>
+        }
+    }
+
+    @if (isStaff && (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.InventoryStaff) ||
+                     User.IsInRole(ApplicationRoles.HrPayroll) || User.IsInRole(ApplicationRoles.Pharmacist)))
+    {
+        var unreadCount = await NotificationServiceForBadge.GetUnreadCountAsync();
+        <li class="app-sidebar-section">System</li>
+        <li>
+            <a class="nav-link @ActiveClass("", "Notification", "Index")" asp-area="" asp-controller="Notification" asp-action="Index">
+                <span class="nav-icon">&#128276;</span> Notifications
+                @if (unreadCount > 0)
+                {
+                    <span class="badge bg-danger nav-badge">@unreadCount</span>
+                }
+            </a>
+        </li>
+    }
+</ul>
+
+<div class="app-sidebar-footer">
+    @if (isAuthenticated)
+    {
+        if (isCustomer)
+        {
+            <form asp-area="CustomerPortal" asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="nav-link"><span class="nav-icon">&#8618;</span> Logout</button>
+            </form>
+        }
+        else
+        {
+            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="nav-link"><span class="nav-icon">&#8618;</span> Logout</button>
+            </form>
+        }
+    }
+    else
+    {
+        <a class="nav-link" asp-area="CustomerPortal" asp-controller="Account" asp-action="Login"><span class="nav-icon">&#128274;</span> Customer Login</a>
+        <a class="nav-link" asp-area="CustomerPortal" asp-controller="Account" asp-action="Register"><span class="nav-icon">&#128100;</span> Register</a>
+        <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login"><span class="nav-icon">&#128737;</span> Staff Login</a>
+    }
+</div>

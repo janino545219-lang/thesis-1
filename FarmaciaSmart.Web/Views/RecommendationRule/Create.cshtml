@@ -1,0 +1,59 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Recommendations.RecommendationRuleViewModel
+@{
+    ViewData["Title"] = "Create Recommendation Rule";
+}
+
+<h2>Create Recommendation Rule</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Trigger" class="form-label"></label>
+        <input asp-for="Trigger" class="form-control" placeholder="e.g. Mild headache or fever" />
+        <span asp-validation-for="Trigger" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="CategoryId" class="form-label"></label>
+            <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                <option value="">-- Select category --</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="ProductId" class="form-label"></label>
+            <select asp-for="ProductId" class="form-select" asp-items="@(new SelectList(Model.Products, "Id", "Name"))">
+                <option value="">-- Any eligible product in category --</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="RecommendationType" class="form-label"></label>
+        <input asp-for="RecommendationType" class="form-control" placeholder="e.g. OTC Medicine" />
+        <span asp-validation-for="RecommendationType" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Explanation" class="form-label"></label>
+        <textarea asp-for="Explanation" class="form-control"></textarea>
+        <span asp-validation-for="Explanation" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Warning" class="form-label"></label>
+        <textarea asp-for="Warning" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Restriction" class="form-label"></label>
+        <textarea asp-for="Restriction" class="form-control"></textarea>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="PharmacistApproved" class="form-check-input" />
+        <label asp-for="PharmacistApproved" class="form-check-label"></label>
+        <div class="form-text">Only pharmacist-approved rules are considered when generating recommendations.</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

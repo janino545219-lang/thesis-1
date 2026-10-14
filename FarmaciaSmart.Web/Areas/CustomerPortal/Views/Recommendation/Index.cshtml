@@ -1,0 +1,26 @@
+@model FarmaciaSmart.Web.Areas.CustomerPortal.Models.ViewModels.RecommendationRequestViewModel
+@{
+    ViewData["Title"] = "Ask AI";
+}
+
+<h2>Get a Recommendation</h2>
+<p class="text-muted">
+    This tool offers preliminary suggestions based on pharmacist-approved guidance. It does not replace
+    professional pharmacist consultation.
+</p>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Index" method="post">
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label"></label>
+        <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+            <option value="">-- Select a concern --</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Get Recommendation</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

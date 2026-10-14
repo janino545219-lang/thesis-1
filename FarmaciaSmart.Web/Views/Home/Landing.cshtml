@@ -1,0 +1,42 @@
+@using FarmaciaSmart.Web.Services.Interfaces
+@inject ILandingContentService ContentService
+@{
+    ViewData["Title"] = "FarmaciaSmart";
+    Layout = "_LandingLayout";
+
+    var trustItems = ContentService.GetTrustItems();
+    var features = ContentService.GetFeatures();
+    var steps = ContentService.GetSteps();
+}
+
+<header class="landing-navbar-wrap">
+    <nav class="landing-navbar" aria-label="Landing page navigation">
+        <div class="landing-brand">
+            <span class="landing-logo-full">
+                @await Html.PartialAsync("_Logo", new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 44 }, { "href", "/" } })
+            </span>
+            <span class="landing-logo-icon">
+                @await Html.PartialAsync("_Logo", new ViewDataDictionary(ViewData) { { "variant", "icon" }, { "height", 36 }, { "href", "/" } })
+            </span>
+        </div>
+        <div class="landing-nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+        <div class="landing-nav-actions">
+            <a class="btn-landing-outline" asp-area="CustomerPortal" asp-controller="Account" asp-action="Login">Sign In</a>
+            <a class="btn-landing-primary" asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">Register</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    @await Component.InvokeAsync("HeroSection")
+    @await Component.InvokeAsync("TrustBar", new { items = trustItems })
+    @await Component.InvokeAsync("FeatureGrid", new { items = features })
+    @await Component.InvokeAsync("HowItWorks", new { items = steps })
+    @await Component.InvokeAsync("DisclaimerBanner")
+</main>
+
+@await Component.InvokeAsync("LandingFooter")

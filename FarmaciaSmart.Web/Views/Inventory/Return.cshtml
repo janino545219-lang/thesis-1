@@ -1,0 +1,73 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Inventories.ProcessReturnViewModel
+@{
+    ViewData["Title"] = "Process Return";
+}
+
+<h2>Process Return</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<form asp-action="Return" method="get" class="mb-3 d-flex gap-2">
+    <input type="text" name="receiptNumber" value="@Model.ReceiptNumber" class="form-control" placeholder="Receipt number (e.g. SALE-000001)" />
+    <button type="submit" class="btn btn-outline-secondary">Look Up</button>
+</form>
+
+@if (Model.Sale is not null)
+{
+    <h4>Sale @Model.Sale.ReceiptNumber &mdash; @Model.Sale.SaleDate.ToString("g")</h4>
+    <div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Sold Qty</th>
+                <th>Unit Price</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Sale.Items)
+        {
+            <tr>
+                <td>@item.Product.Name</td>
+                <td>@item.Quantity</td>
+                <td>@item.UnitPrice.ToString("N2")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+
+    <form asp-action="Return" method="post">
+        <input type="hidden" asp-for="ReceiptNumber" />
+        <div class="mb-3">
+            <label asp-for="SaleItemId" class="form-label">Item to return</label>
+            <select asp-for="SaleItemId" class="form-select">
+                <option value="">-- Select item --</option>
+                @foreach (var item in Model.Sale.Items)
+                {
+                    <option value="@item.Id">@item.Product.Name (sold: @item.Quantity)</option>
+                }
+            </select>
+            <span asp-validation-for="SaleItemId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Quantity" class="form-label"></label>
+            <input asp-for="Quantity" class="form-control" type="number" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Reason" class="form-label"></label>
+            <textarea asp-for="Reason" class="form-control"></textarea>
+            <span asp-validation-for="Reason" class="text-danger"></span>
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="RestockToInventory" class="form-check-input" />
+            <label asp-for="RestockToInventory" class="form-check-label"></label>
+        </div>
+        <button type="submit" class="btn btn-primary">Process Return</button>
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

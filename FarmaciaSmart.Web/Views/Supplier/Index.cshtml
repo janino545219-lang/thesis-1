@@ -1,0 +1,61 @@
+@model List<Supplier>
+@{
+    ViewData["Title"] = "Suppliers";
+}
+
+<h2>Suppliers</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Supplier</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Contact Person</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var supplier in Model)
+    {
+        <tr>
+            <td>@supplier.Name</td>
+            <td>@supplier.ContactPerson</td>
+            <td>@supplier.Phone</td>
+            <td>@supplier.Email</td>
+            <td>
+                @if (supplier.IsActive)
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Inactive</span>
+                }
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@supplier.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                <a asp-action="Edit" asp-route-id="@supplier.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="ToggleActive" asp-route-id="@supplier.Id" method="post" class="d-inline">
+                    <input type="hidden" name="isActive" value="@(!supplier.IsActive)" />
+                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                        @(supplier.IsActive ? "Deactivate" : "Activate")
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

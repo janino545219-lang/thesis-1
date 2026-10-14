@@ -1,0 +1,45 @@
+@* Hero section with photo, floating cards, headline, and CTAs *@
+
+<section class="landing-hero" aria-label="Hero">
+    <div class="landing-hero-text landing-animate landing-animate-1">
+        <h1>Multi-branch pharmacy care, backed by pharmacist-reviewed&nbsp;AI.</h1>
+        <p class="landing-animate landing-animate-2">
+            AI-assisted OTC and supplement suggestions — always reviewed by a licensed
+            pharmacist before you pick up in-store.
+        </p>
+        <div class="landing-hero-ctas landing-animate landing-animate-3">
+            <a class="btn-landing-cta" asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">
+                Get Started as a Customer
+            </a>
+            <a class="btn-landing-staff-link" asp-controller="Account" asp-action="Login">
+                Staff Sign In &rarr;
+            </a>
+        </div>
+    </div>
+
+    <div class="landing-hero-image-wrap landing-animate landing-animate-4">
+        <img src="/images/hero-pharmacy.webp"
+             alt="OTC medicine boxes, vitamin bottles, and blister packs on a clean pharmacy counter"
+             width="600"
+             height="450"
+             fetchpriority="high"
+             loading="eager"
+             class="landing-hero-img" />
+
+        <div class="landing-float-card landing-float-badge" aria-hidden="true">
+            <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "shield-check" } })' />
+            <span>Pharmacist-reviewed</span>
+        </div>
+
+        <div class="landing-float-card landing-float-suggestion" aria-hidden="true">
+            <strong>Headache?</strong>
+            <span>Suggested: Paracetamol 500 mg</span>
+            <small>Pending pharmacist review</small>
+        </div>
+
+        <div class="landing-float-card landing-float-stock" aria-hidden="true">
+            <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "check-circle" } })' />
+            <span>In stock at your branch</span>
+        </div>
+    </div>
+</section>

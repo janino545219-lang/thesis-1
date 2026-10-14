@@ -1,0 +1,68 @@
+@model Recommendation
+@{
+    ViewData["Title"] = "Review Recommendation";
+}
+
+<h2>Review Recommendation</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Customer</dt>
+    <dd class="col-sm-9">@Model.Customer.User.FirstName @Model.Customer.User.LastName</dd>
+
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">@Model.Category.Name</dd>
+
+    <dt class="col-sm-3">Requested</dt>
+    <dd class="col-sm-9">@Model.CreatedAt.ToString("g")</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.ReviewStatus</dd>
+</dl>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Product</th>
+            <th>Score</th>
+            <th>Explanation</th>
+            <th>Warning</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Items.OrderBy(i => i.Rank))
+    {
+        <tr>
+            <td>@item.Rank</td>
+            <td>@item.Product.Name</td>
+            <td>@item.Score</td>
+            <td>@item.Explanation</td>
+            <td>@item.Warning</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+
+@if (Model.ReviewStatus == RecommendationReviewStatus.PendingReview)
+{
+    <form asp-action="Review" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <div class="mb-3">
+            <label class="form-label">Decision</label>
+            <select name="status" class="form-select">
+                <option value="@((int)RecommendationReviewStatus.Approved)">Approve</option>
+                <option value="@((int)RecommendationReviewStatus.Modified)">Modified (approved with changes noted)</option>
+                <option value="@((int)RecommendationReviewStatus.Rejected)">Reject</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea name="notes" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>

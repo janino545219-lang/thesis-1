@@ -1,0 +1,57 @@
+@model List<FarmaciaSmart.Web.Models.Entities.Category>
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h2>Categories</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Category</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var category in Model)
+    {
+        <tr>
+            <td>@category.Name</td>
+            <td>@category.Description</td>
+            <td>
+                @if (category.IsActive)
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Inactive</span>
+                }
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@category.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form asp-action="ToggleActive" asp-route-id="@category.Id" method="post" class="d-inline">
+                    <input type="hidden" name="isActive" value="@(!category.IsActive)" />
+                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                        @(category.IsActive ? "Deactivate" : "Activate")
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

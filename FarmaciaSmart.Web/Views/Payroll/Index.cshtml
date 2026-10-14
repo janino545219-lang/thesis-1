@@ -1,0 +1,49 @@
+@model List<Payroll>
+@{
+    ViewData["Title"] = "Payroll";
+}
+
+<h2>Payroll</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create Payroll</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Employee</th>
+            <th>Period</th>
+            <th>Gross Pay</th>
+            <th>Deductions</th>
+            <th>Net Pay</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var p in Model)
+    {
+        <tr>
+            <td>@p.Employee.FirstName @p.Employee.LastName</td>
+            <td>@p.PeriodStart.ToString("d") &ndash; @p.PeriodEnd.ToString("d")</td>
+            <td>@p.GrossPay.ToString("N2")</td>
+            <td>@p.TotalDeductions.ToString("N2")</td>
+            <td>@p.NetPay.ToString("N2")</td>
+            <td>
+                @if (p.Status == PayrollStatus.Finalized)
+                {
+                    <span class="badge bg-success">Finalized</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Draft</span>
+                }
+            </td>
+            <td><a asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary">View</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

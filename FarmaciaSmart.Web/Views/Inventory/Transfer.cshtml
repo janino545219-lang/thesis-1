@@ -1,0 +1,47 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Inventories.TransferStockViewModel
+@{
+    ViewData["Title"] = "Transfer Stock";
+}
+
+<h2>Transfer Stock</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Transfer" method="post">
+    <div class="mb-3">
+        <label asp-for="SourceInventoryBatchId" class="form-label"></label>
+        <select asp-for="SourceInventoryBatchId" class="form-select">
+            <option value="">-- Select source batch --</option>
+            @foreach (var batch in Model.AvailableBatches)
+            {
+                <option value="@batch.Id">
+                    @batch.Product.Name &mdash; @batch.Branch.Name &mdash; @batch.BatchNumber (Remaining: @batch.QuantityRemaining)
+                </option>
+            }
+        </select>
+        <span asp-validation-for="SourceInventoryBatchId" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="DestinationBranchId" class="form-label"></label>
+            <select asp-for="DestinationBranchId" class="form-select" asp-items="@(new SelectList(Model.Branches, "Id", "Name"))">
+                <option value="">-- Select destination branch --</option>
+            </select>
+            <span asp-validation-for="DestinationBranchId" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Quantity" class="form-label"></label>
+            <input asp-for="Quantity" class="form-control" type="number" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Notes" class="form-label"></label>
+        <textarea asp-for="Notes" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Transfer Stock</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

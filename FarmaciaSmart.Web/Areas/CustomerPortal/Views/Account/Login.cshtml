@@ -1,0 +1,67 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Account.LoginViewModel
+@{
+    ViewData["Title"] = "Customer Login";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth-card">
+    <div class="auth-visual">
+        <div class="auth-brand-badge">
+            <partial name="_Logo" view-data='@(new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 36 }, { "href", "/" } })' />
+        </div>
+        <div class="auth-visual-highlights">
+            <strong>Your pharmacy, online.</strong>
+            <ul>
+                <li>&#10003; AI-assisted OTC &amp; supplement suggestions, reviewed by our pharmacists</li>
+                <li>&#10003; Pre-order online, pick up at your preferred branch</li>
+                <li>&#10003; Track your recommendation and order history anytime</li>
+            </ul>
+        </div>
+    </div>
+    <div class="auth-form-side">
+        <div class="auth-audience-switch">
+            <span class="active">Customer</span>
+            <span class="divider">&middot;</span>
+            <a asp-area="" asp-controller="Account" asp-action="Login">Staff</a>
+        </div>
+        <div class="text-center">
+            <div class="auth-tabs">
+                <span class="auth-tab active">Login</span>
+                <a class="auth-tab" asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">Sign Up</a>
+            </div>
+        </div>
+        <div class="auth-heading">
+            <h2>Welcome back</h2>
+            <p>Please enter your details to sign in.</p>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-area="CustomerPortal" asp-controller="Account" asp-action="Login" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" autocomplete="username" placeholder="Enter your email address" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="Enter your password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label"></label>
+            </div>
+            <button type="submit" class="btn auth-submit-btn text-white w-100">Login</button>
+        </form>
+
+        <p class="auth-footer-link">
+            Don't have an account?
+            <a asp-area="CustomerPortal" asp-controller="Account" asp-action="Register">Sign up</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

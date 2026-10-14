@@ -1,0 +1,59 @@
+@model List<Employee>
+@{
+    ViewData["Title"] = "Employees";
+}
+
+<h2>Employees</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Employee</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Branch</th>
+            <th>Status</th>
+            <th>Hire Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var employee in Model)
+    {
+        <tr>
+            <td>@employee.FirstName @employee.LastName</td>
+            <td>@employee.Position</td>
+            <td>@employee.Branch.Name</td>
+            <td>
+                @switch (employee.EmploymentStatus)
+                {
+                    case EmploymentStatus.Active:
+                        <span class="badge bg-success">Active</span>
+                        break;
+                    case EmploymentStatus.OnLeave:
+                        <span class="badge bg-warning text-dark">On Leave</span>
+                        break;
+                    case EmploymentStatus.Terminated:
+                        <span class="badge bg-secondary">Terminated</span>
+                        break;
+                }
+            </td>
+            <td>@employee.HireDate.ToString("d")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

@@ -1,0 +1,44 @@
+@model RecommendationRule
+@{
+    ViewData["Title"] = "Recommendation Rule Details";
+}
+
+<h2>Recommendation Rule Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Trigger</dt>
+    <dd class="col-sm-9">@Model.Trigger</dd>
+
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">@Model.Category.Name</dd>
+
+    <dt class="col-sm-3">Product</dt>
+    <dd class="col-sm-9">@(Model.Product?.Name ?? "Any eligible product in category")</dd>
+
+    <dt class="col-sm-3">Recommendation Type</dt>
+    <dd class="col-sm-9">@Model.RecommendationType</dd>
+
+    <dt class="col-sm-3">Explanation</dt>
+    <dd class="col-sm-9">@Model.Explanation</dd>
+
+    <dt class="col-sm-3">Warning</dt>
+    <dd class="col-sm-9">@Model.Warning</dd>
+
+    <dt class="col-sm-3">Restriction</dt>
+    <dd class="col-sm-9">@Model.Restriction</dd>
+
+    <dt class="col-sm-3">Pharmacist Approved</dt>
+    <dd class="col-sm-9">@(Model.PharmacistApproved ? "Yes" : "No")</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@(Model.IsActive ? "Active" : "Inactive")</dd>
+
+    <dt class="col-sm-3">Created By</dt>
+    <dd class="col-sm-9">@Model.CreatedByUser.Email</dd>
+
+    <dt class="col-sm-3">Created</dt>
+    <dd class="col-sm-9">@Model.CreatedAt.ToString("g")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

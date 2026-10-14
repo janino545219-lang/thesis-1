@@ -1,0 +1,152 @@
+@using FarmaciaSmart.Web.Models.Entities
+@model PurchaseOrder
+@{
+    ViewData["Title"] = "Purchase Order Details";
+    var products = (List<Product>)ViewBag.Products;
+}
+
+<h2>Purchase Order @Model.OrderNumber</h2>
+<p>Supplier: @Model.Supplier.Name &mdash; Branch: @Model.Branch.Name</p>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<p>
+    Status:
+    @{
+        var badgeClass = Model.Status switch
+        {
+            PurchaseOrderStatus.Draft => "bg-secondary",
+            PurchaseOrderStatus.Ordered => "bg-info text-dark",
+            PurchaseOrderStatus.PartiallyReceived => "bg-warning text-dark",
+            PurchaseOrderStatus.Received => "bg-success",
+            PurchaseOrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+    <span class="badge @badgeClass">@Model.Status</span>
+</p>
+
+@if (Model.ExpectedDeliveryDate is not null)
+{
+    <p>Expected delivery: @Model.ExpectedDeliveryDate.Value.ToString("d")</p>
+}
+@if (!string.IsNullOrWhiteSpace(Model.Notes))
+{
+    <p>Notes: @Model.Notes</p>
+}
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Ordered</th>
+            <th>Received</th>
+            <th>Unit Cost</th>
+            <th>Line Total</th>
+            @if (Model.Status == PurchaseOrderStatus.Draft)
+            {
+                <th></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>@item.Product.Name</td>
+            <td>@item.QuantityOrdered</td>
+            <td>@item.QuantityReceived</td>
+            <td>@item.UnitCost.ToString("N2")</td>
+            <td>@((item.UnitCost * item.QuantityOrdered).ToString("N2"))</td>
+            @if (Model.Status == PurchaseOrderStatus.Draft)
+            {
+                <td>
+                    <form asp-action="RemoveItem" method="post" class="d-inline">
+                        <input type="hidden" name="purchaseOrderItemId" value="@item.Id" />
+                        <input type="hidden" name="purchaseOrderId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                    </form>
+                </td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+
+<p><strong>Total: @Model.TotalAmount.ToString("N2")</strong></p>
+
+@if (Model.Status == PurchaseOrderStatus.Draft)
+{
+    <h4>Add Item</h4>
+    <form asp-action="AddItem" method="post" class="row g-2 mb-3">
+        <input type="hidden" name="purchaseOrderId" value="@Model.Id" />
+        <div class="col-auto">
+            <select name="ProductId" class="form-select" asp-items="@(new SelectList(products, "Id", "Name"))">
+                <option value="">-- Product --</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <input type="number" name="QuantityOrdered" class="form-control" placeholder="Quantity" min="1" required />
+        </div>
+        <div class="col-auto">
+            <input type="number" name="UnitCost" class="form-control" placeholder="Unit cost" step="0.01" min="0.01" required />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">Add</button>
+        </div>
+    </form>
+
+    <form asp-action="PlaceOrder" asp-route-id="@Model.Id" method="post" class="d-inline">
+        <button type="submit" class="btn btn-success">Place Order</button>
+    </form>
+    <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+        <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
+    </form>
+}
+
+@if (Model.Status is PurchaseOrderStatus.Ordered or PurchaseOrderStatus.PartiallyReceived)
+{
+    <h4>Receive Stock</h4>
+    <form asp-action="Receive" method="post" class="row g-2 mb-3">
+        <input type="hidden" name="purchaseOrderId" value="@Model.Id" />
+        <div class="col-auto">
+            <select name="PurchaseOrderItemId" class="form-select">
+                <option value="">-- Line item --</option>
+                @foreach (var item in Model.Items.Where(i => i.QuantityReceived < i.QuantityOrdered))
+                {
+                    <option value="@item.Id">@item.Product.Name (@(item.QuantityOrdered - item.QuantityReceived) remaining)</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <input type="number" name="Quantity" class="form-control" placeholder="Quantity" min="1" required />
+        </div>
+        <div class="col-auto">
+            <input type="text" name="BatchNumber" class="form-control" placeholder="Batch number" required />
+        </div>
+        <div class="col-auto">
+            <input type="date" name="ExpirationDate" class="form-control" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">Receive</button>
+        </div>
+    </form>
+
+    @if (Model.Status == PurchaseOrderStatus.Ordered)
+    {
+        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
+        </form>
+    }
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>

@@ -1,0 +1,70 @@
+@model Sale
+@{
+    ViewData["Title"] = "Receipt";
+}
+
+<h2>Receipt @Model.ReceiptNumber</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Branch</dt>
+    <dd class="col-sm-9">@Model.Branch.Name</dd>
+
+    <dt class="col-sm-3">Date</dt>
+    <dd class="col-sm-9">@Model.SaleDate.ToString("g")</dd>
+
+    <dt class="col-sm-3">Cashier</dt>
+    <dd class="col-sm-9">@Model.CashierUser.Email</dd>
+
+    <dt class="col-sm-3">Customer</dt>
+    <dd class="col-sm-9">@(Model.Customer is null ? "Walk-in" : $"{Model.Customer.User.FirstName} {Model.Customer.User.LastName}")</dd>
+</dl>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Line Total</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>@item.Product.Name</td>
+            <td>@item.Quantity</td>
+            <td>@item.UnitPrice.ToString("N2")</td>
+            <td>@item.LineTotal.ToString("N2")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Subtotal</dt>
+    <dd class="col-sm-9">@Model.SubTotal.ToString("N2")</dd>
+
+    <dt class="col-sm-3">Discount</dt>
+    <dd class="col-sm-9">@Model.DiscountAmount.ToString("N2")</dd>
+
+    <dt class="col-sm-3">Total</dt>
+    <dd class="col-sm-9"><strong>@Model.TotalAmount.ToString("N2")</strong></dd>
+
+    @if (Model.Payment is not null)
+    {
+        <dt class="col-sm-3">Payment Method</dt>
+        <dd class="col-sm-9">@Model.Payment.Method</dd>
+
+        <dt class="col-sm-3">Amount Tendered</dt>
+        <dd class="col-sm-9">@Model.Payment.AmountTendered.ToString("N2")</dd>
+
+        <dt class="col-sm-3">Change</dt>
+        <dd class="col-sm-9">@Model.Payment.ChangeAmount.ToString("N2")</dd>
+    }
+</dl>
+
+<a asp-action="Index" class="btn btn-primary">New Sale</a>
+<a asp-action="History" class="btn btn-outline-secondary">Sales History</a>

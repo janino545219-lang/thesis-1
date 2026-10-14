@@ -1,0 +1,15 @@
+@model IReadOnlyList<FarmaciaSmart.Web.Models.ViewModels.Landing.TrustItem>
+
+<div class="landing-trust-bar reveal" aria-label="Trust signals">
+    <div class="landing-trust-grid">
+        @foreach (var item in Model)
+        {
+            <div class="landing-trust-item">
+                <span class="landing-trust-icon">
+                    <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", item.Icon } })' />
+                </span>
+                <span>@item.Text</span>
+            </div>
+        }
+    </div>
+</div>

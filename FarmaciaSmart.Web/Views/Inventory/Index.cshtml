@@ -1,0 +1,81 @@
+@using FarmaciaSmart.Web.Models.ViewModels.Inventories
+@model List<StockRowViewModel>
+@{
+    ViewData["Title"] = "Inventory";
+}
+
+<h2>Inventory</h2>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<p>
+    <a asp-action="StockIn" class="btn btn-primary">Stock In</a>
+    <a asp-action="Adjust" class="btn btn-outline-primary">Adjust Stock</a>
+    <a asp-action="Transfer" class="btn btn-outline-primary">Transfer Stock</a>
+    <a asp-action="ReportDamaged" class="btn btn-outline-danger">Report Damaged</a>
+    <a asp-action="DamagedItems" class="btn btn-outline-secondary">Damaged Items</a>
+    <a asp-action="Return" class="btn btn-outline-warning">Process Return</a>
+    <a asp-action="Returns" class="btn btn-outline-secondary">Returns</a>
+    <a asp-action="History" class="btn btn-outline-secondary">Transaction History</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Branch</th>
+            <th>Product</th>
+            <th>On Hand</th>
+            <th>Low Stock Threshold</th>
+            <th>Stock Status</th>
+            <th>Nearest Expiration</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var row in Model)
+    {
+        var inventory = row.Inventory;
+        var isLowStock = inventory.QuantityOnHand <= inventory.Product.LowStockThreshold;
+        var isExpired = row.NearestExpiration.HasValue && row.NearestExpiration.Value.Date < DateTime.Today;
+        var isExpiringSoon = row.NearestExpiration.HasValue && !isExpired && row.NearestExpiration.Value.Date <= DateTime.Today.AddDays(30);
+        <tr>
+            <td>@inventory.Branch.Name</td>
+            <td>@inventory.Product.Name</td>
+            <td>@inventory.QuantityOnHand</td>
+            <td>@inventory.Product.LowStockThreshold</td>
+            <td>
+                @if (isLowStock)
+                {
+                    <span class="badge bg-danger">Low Stock</span>
+                }
+                else
+                {
+                    <span class="badge bg-success">OK</span>
+                }
+            </td>
+            <td>
+                @if (row.NearestExpiration.HasValue)
+                {
+                    @row.NearestExpiration.Value.ToString("d")
+                    @if (isExpired)
+                    {
+                        <span class="badge bg-danger ms-1">Expired</span>
+                    }
+                    else if (isExpiringSoon)
+                    {
+                        <span class="badge bg-warning text-dark ms-1">Expiring Soon</span>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">&mdash;</span>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

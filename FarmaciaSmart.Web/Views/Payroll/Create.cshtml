@@ -1,0 +1,36 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Payrolls.CreatePayrollViewModel
+@{
+    ViewData["Title"] = "Create Payroll";
+}
+
+<h2>Create Payroll</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="EmployeeId" class="form-label"></label>
+        <select asp-for="EmployeeId" class="form-select" asp-items="@(new SelectList(Model.Employees, "Id", "FullName"))">
+            <option value="">-- Select employee --</option>
+        </select>
+        <span asp-validation-for="EmployeeId" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="PeriodStart" class="form-label"></label>
+            <input asp-for="PeriodStart" class="form-control" />
+            <span asp-validation-for="PeriodStart" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="PeriodEnd" class="form-label"></label>
+            <input asp-for="PeriodEnd" class="form-control" />
+            <span asp-validation-for="PeriodEnd" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-text mb-3">Basic pay defaults to half the employee's monthly salary (semi-monthly). Add earnings/deductions on the next screen.</div>
+    <button type="submit" class="btn btn-primary">Create Draft</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

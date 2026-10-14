@@ -1,0 +1,42 @@
+@model FarmaciaSmart.Web.Models.ViewModels.Inventories.StockAdjustmentViewModel
+@{
+    ViewData["Title"] = "Adjust Stock";
+}
+
+<h2>Adjust Stock</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Adjust" method="post">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="ProductId" class="form-label"></label>
+            <select asp-for="ProductId" class="form-select" asp-items="@(new SelectList(Model.Products, "Id", "Name"))">
+                <option value="">-- Select product --</option>
+            </select>
+            <span asp-validation-for="ProductId" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="BranchId" class="form-label"></label>
+            <select asp-for="BranchId" class="form-select" asp-items="@(new SelectList(Model.Branches, "Id", "Name"))">
+                <option value="">-- Select branch --</option>
+            </select>
+            <span asp-validation-for="BranchId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="AdjustmentQuantity" class="form-label"></label>
+        <input asp-for="AdjustmentQuantity" class="form-control" type="number" />
+        <span asp-validation-for="AdjustmentQuantity" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Reason" class="form-label"></label>
+        <textarea asp-for="Reason" class="form-control" placeholder="e.g. Physical count correction"></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Record Adjustment</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

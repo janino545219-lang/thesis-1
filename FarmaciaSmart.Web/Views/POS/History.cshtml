@@ -1,0 +1,42 @@
+@model List<Sale>
+@{
+    ViewData["Title"] = "Sales History";
+}
+
+<h2>Sales History</h2>
+
+<p>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to POS</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Receipt #</th>
+            <th>Date</th>
+            <th>Branch</th>
+            <th>Cashier</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var sale in Model)
+    {
+        <tr>
+            <td>@sale.ReceiptNumber</td>
+            <td>@sale.SaleDate.ToString("g")</td>
+            <td>@sale.Branch.Name</td>
+            <td>@sale.CashierUser.Email</td>
+            <td>@sale.TotalAmount.ToString("N2")</td>
+            <td>@sale.Status</td>
+            <td>
+                <a asp-action="Receipt" asp-route-id="@sale.Id" class="btn btn-sm btn-outline-secondary">View Receipt</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

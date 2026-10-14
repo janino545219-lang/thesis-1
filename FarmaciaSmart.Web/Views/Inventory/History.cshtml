@@ -1,0 +1,46 @@
+@using FarmaciaSmart.Web.Models.ViewModels
+@model PagedResult<InventoryTransaction>
+@{
+    ViewData["Title"] = "Inventory Transaction History";
+}
+
+<h2>Inventory Transaction History</h2>
+<p class="form-text">@Model.TotalCount total transaction(s). Page @Model.Page of @Model.TotalPages.</p>
+
+<p>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to Stock</a>
+</p>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Branch</th>
+            <th>Product</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Reference</th>
+            <th>Performed By</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var t in Model.Items)
+    {
+        <tr>
+            <td>@t.Timestamp.ToString("g")</td>
+            <td>@t.Branch.Name</td>
+            <td>@t.Product.Name</td>
+            <td>@t.TransactionType</td>
+            <td>@t.Quantity</td>
+            <td>@t.ReferenceNumber</td>
+            <td>@t.PerformedByUser.Email</td>
+            <td>@t.Notes</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>
+
+<partial name="_Pager" model="(Model.Page, Model.TotalPages)" />

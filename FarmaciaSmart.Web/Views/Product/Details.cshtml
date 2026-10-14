@@ -1,0 +1,47 @@
+@model Product
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h2>Product Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">@Model.Category.Name</dd>
+
+    <dt class="col-sm-3">Brand</dt>
+    <dd class="col-sm-9">@Model.Brand</dd>
+
+    <dt class="col-sm-3">Unit</dt>
+    <dd class="col-sm-9">@Model.Unit</dd>
+
+    <dt class="col-sm-3">Barcode</dt>
+    <dd class="col-sm-9">@Model.Barcode</dd>
+
+    <dt class="col-sm-3">Price</dt>
+    <dd class="col-sm-9">@Model.Price.ToString("N2")</dd>
+
+    <dt class="col-sm-3">Product Type</dt>
+    <dd class="col-sm-9">@Model.ProductType</dd>
+
+    <dt class="col-sm-3">Requires Expiration Tracking</dt>
+    <dd class="col-sm-9">@(Model.RequiresExpirationTracking ? "Yes" : "No")</dd>
+
+    <dt class="col-sm-3">Low Stock Threshold</dt>
+    <dd class="col-sm-9">@Model.LowStockThreshold</dd>
+
+    <dt class="col-sm-3">AI Recommendation Eligible</dt>
+    <dd class="col-sm-9">@(Model.IsRecommendationEligible ? "Yes" : "No")</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@(Model.IsActive ? "Active" : "Inactive")</dd>
+
+    <dt class="col-sm-3">Created</dt>
+    <dd class="col-sm-9">@Model.CreatedAt.ToString("g")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
