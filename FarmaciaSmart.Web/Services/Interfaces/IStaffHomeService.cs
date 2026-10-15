@@ -6,5 +6,5 @@ public interface IStaffHomeService
 {
     Task<StaffHomeViewModel> GetSummaryAsync(
         bool isAdministrator, bool isCashier, bool isInventoryStaff, bool isPharmacist, bool isHrPayroll,
-        int? branchId, CancellationToken cancellationToken = default);
+        int? branchId, bool isBranchManager = false, bool isSuperAdmin = false, CancellationToken cancellationToken = default);
 }

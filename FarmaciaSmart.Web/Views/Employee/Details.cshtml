@@ -31,7 +31,17 @@
     <dd class="col-sm-9">@Model.MonthlySalary.ToString("N2")</dd>
 
     <dt class="col-sm-3">System Account</dt>
-    <dd class="col-sm-9">@(Model.UserId is null ? "Not linked" : "Linked")</dd>
+    <dd class="col-sm-9">
+        @if (Model.User != null || !string.IsNullOrEmpty(Model.UserId))
+        {
+            <span class="badge bg-success">&#10003; Active Account (@(Model.User?.UserName ?? Model.Email))</span>
+        }
+        else
+        {
+            <span class="text-muted me-2">Not linked</span>
+            <a asp-action="ProvisionLogin" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold">+ Provision Login</a>
+        }
+    </dd>
 </dl>
 
 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>

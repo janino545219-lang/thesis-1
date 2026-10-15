@@ -64,5 +64,9 @@
         })();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+    @if (User.IsInRole(FarmaciaSmart.Web.Helpers.ApplicationRoles.Customer))
+    {
+        <partial name="_CustomerChatbot" />
+    }
 </body>
 </html>

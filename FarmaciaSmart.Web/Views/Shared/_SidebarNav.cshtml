@@ -9,6 +9,8 @@
 @{
     var isAuthenticated = SignInManager.IsSignedIn(User);
     var isCustomer = User.IsInRole(ApplicationRoles.Customer);
+    var isSuperAdmin = User.IsInRole(ApplicationRoles.SuperAdmin);
+    var isAdmin = User.IsInRole(ApplicationRoles.Administrator) || isSuperAdmin;
     var isStaff = !isCustomer && ApplicationRoles.StaffRoles.Any(User.IsInRole);
 
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
@@ -25,7 +27,7 @@
 
     var primaryRole = new[]
     {
-        ApplicationRoles.Administrator, ApplicationRoles.Pharmacist, ApplicationRoles.HrPayroll,
+        ApplicationRoles.SuperAdmin, ApplicationRoles.Administrator, ApplicationRoles.BranchManager, ApplicationRoles.Pharmacist, ApplicationRoles.HrPayroll,
         ApplicationRoles.InventoryStaff, ApplicationRoles.Cashier, ApplicationRoles.Customer
     }.FirstOrDefault(User.IsInRole) ?? "User";
 
@@ -85,59 +87,71 @@ else
         <li><a class="nav-link @ActiveClass("CustomerPortal", "Shop", "Orders")" asp-area="CustomerPortal" asp-controller="Shop" asp-action="Orders"><span class="nav-icon">&#128230;</span> My Preorders</a></li>
 
         <li class="app-sidebar-section">AI Recommendations</li>
-        <li><a class="nav-link @ActiveClass("CustomerPortal", "Recommendation", "Index")" asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Index"><span class="nav-icon">&#129502;</span> Ask AI</a></li>
         <li><a class="nav-link @ActiveClass("CustomerPortal", "Recommendation", "History")" asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="History"><span class="nav-icon">&#128337;</span> History</a></li>
     }
     else if (isStaff)
     {
-        @if (User.IsInRole(ApplicationRoles.Administrator))
+        @if (isAdmin || User.IsInRole(ApplicationRoles.BranchManager) || User.IsInRole(ApplicationRoles.Pharmacist))
         {
             <li class="app-sidebar-section">Overview</li>
             <li><a class="nav-link @ActiveClass("", "Analytics", "Index")" asp-area="" asp-controller="Analytics" asp-action="Index"><span class="nav-icon">&#128200;</span> Analytics</a></li>
-            <li><a class="nav-link @ActiveClass("", "Branch", "Index")" asp-area="" asp-controller="Branch" asp-action="Index"><span class="nav-icon">&#127970;</span> Branches</a></li>
-            <li><a class="nav-link @ActiveClass("", "Customer", "Index")" asp-area="" asp-controller="Customer" asp-action="Index"><span class="nav-icon">&#128101;</span> Customers</a></li>
-            <li><a class="nav-link @ActiveClass("", "AuditLog", "Index")" asp-area="" asp-controller="AuditLog" asp-action="Index"><span class="nav-icon">&#128203;</span> Audit Log</a></li>
+            @if (isAdmin)
+            {
+                <li><a class="nav-link @ActiveClass("", "User", "Index")" asp-area="" asp-controller="User" asp-action="Index"><span class="nav-icon">&#128101;</span> Users &amp; Roles</a></li>
+                <li><a class="nav-link @ActiveClass("", "Branch", "Index")" asp-area="" asp-controller="Branch" asp-action="Index"><span class="nav-icon">&#127970;</span> Branches</a></li>
+            }
+            @if (isAdmin || User.IsInRole(ApplicationRoles.BranchManager))
+            {
+                <li><a class="nav-link @ActiveClass("", "Customer", "Index")" asp-area="" asp-controller="Customer" asp-action="Index"><span class="nav-icon">&#128101;</span> Customers</a></li>
+            }
+            @if (isAdmin)
+            {
+                <li><a class="nav-link @ActiveClass("", "AuditLog", "Index")" asp-area="" asp-controller="AuditLog" asp-action="Index"><span class="nav-icon">&#128203;</span> Audit Log</a></li>
+            }
         }
 
-        @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.InventoryStaff))
+        @if (isAdmin || User.IsInRole(ApplicationRoles.BranchManager) || User.IsInRole(ApplicationRoles.InventoryStaff) || User.IsInRole(ApplicationRoles.Pharmacist))
         {
             <li class="app-sidebar-section">Catalog &amp; Inventory</li>
             <li><a class="nav-link @ActiveClass("", "Category", "Index")" asp-area="" asp-controller="Category" asp-action="Index"><span class="nav-icon">&#127991;</span> Categories</a></li>
             <li><a class="nav-link @ActiveClass("", "Product", "Index")" asp-area="" asp-controller="Product" asp-action="Index"><span class="nav-icon">&#128137;</span> Products</a></li>
             <li><a class="nav-link @ActiveClass("", "Supplier", "Index")" asp-area="" asp-controller="Supplier" asp-action="Index"><span class="nav-icon">&#128666;</span> Suppliers</a></li>
-            <li><a class="nav-link @ActiveClass("", "Purchase", "Index")" asp-area="" asp-controller="Purchase" asp-action="Index"><span class="nav-icon">&#128179;</span> Purchase Orders</a></li>
-            <li><a class="nav-link @ActiveClass("", "Inventory", "Index")" asp-area="" asp-controller="Inventory" asp-action="Index"><span class="nav-icon">&#128230;</span> Inventory</a></li>
+            <li><a class="nav-link @ActiveClass("", "Purchase", "Index")" asp-area="" asp-controller="Purchase" asp-action="Index"><span class="nav-icon">&#128179;</span> Purchase Orders &amp; Expenses</a></li>
+            <li><a class="nav-link @ActiveClass("", "Inventory", "Index")" asp-area="" asp-controller="Inventory" asp-action="Index"><span class="nav-icon">&#128230;</span> Inventory &amp; Returns</a></li>
             <li><a class="nav-link @ActiveClass("", "Report", "SalesSummary")" asp-area="" asp-controller="Report" asp-action="SalesSummary"><span class="nav-icon">&#128196;</span> Reports</a></li>
         }
 
-        @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.Cashier) || User.IsInRole(ApplicationRoles.InventoryStaff))
+        @if (isAdmin || User.IsInRole(ApplicationRoles.BranchManager) || User.IsInRole(ApplicationRoles.Cashier) || User.IsInRole(ApplicationRoles.InventoryStaff) || User.IsInRole(ApplicationRoles.Pharmacist))
         {
-            <li class="app-sidebar-section">Sales &amp; Orders</li>
-            @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.Cashier))
-            {
-                <li><a class="nav-link @ActiveClass("", "POS", "Index")" asp-area="" asp-controller="POS" asp-action="Index"><span class="nav-icon">&#128181;</span> POS</a></li>
-            }
-            <li><a class="nav-link @ActiveClass("", "CustomerOrder", "Index")" asp-area="" asp-controller="CustomerOrder" asp-action="Index"><span class="nav-icon">&#128717;</span> Customer Pre-Orders</a></li>
+            <li class="app-sidebar-section">Sales &amp; Prescriptions</li>
+            <li><a class="nav-link @ActiveClass("", "POS", "Index")" asp-area="" asp-controller="POS" asp-action="Index"><span class="nav-icon">&#128181;</span> POS Terminal</a></li>
+            <li><a class="nav-link @ActiveClass("", "CustomerOrder", "Index")" asp-area="" asp-controller="CustomerOrder" asp-action="Index"><span class="nav-icon">&#128717;</span> Prescriptions &amp; Pre-Orders</a></li>
         }
 
-        @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.Pharmacist))
+        @if (isAdmin || User.IsInRole(ApplicationRoles.Pharmacist))
         {
             <li class="app-sidebar-section">AI &amp; Recommendations</li>
             <li><a class="nav-link @ActiveClass("", "RecommendationRule", "Index")" asp-area="" asp-controller="RecommendationRule" asp-action="Index"><span class="nav-icon">&#129502;</span> Recommendation Rules</a></li>
             <li><a class="nav-link @ActiveClass("", "RecommendationReview", "Index")" asp-area="" asp-controller="RecommendationReview" asp-action="Index"><span class="nav-icon">&#9989;</span> Pending Reviews</a></li>
         }
 
-        @if (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.HrPayroll))
+        @if (isAdmin || User.IsInRole(ApplicationRoles.BranchManager) || User.IsInRole(ApplicationRoles.HrPayroll))
         {
-            <li class="app-sidebar-section">People &amp; Payroll</li>
-            <li><a class="nav-link @ActiveClass("", "Employee", "Index")" asp-area="" asp-controller="Employee" asp-action="Index"><span class="nav-icon">&#128100;</span> Employees</a></li>
+            <li class="app-sidebar-section">People &amp; Staff</li>
+            @if (isAdmin)
+            {
+                <li><a class="nav-link @ActiveClass("", "Employee", "Index")" asp-area="" asp-controller="Employee" asp-action="Index"><span class="nav-icon">&#128100;</span> Employees</a></li>
+            }
             <li><a class="nav-link @ActiveClass("", "Attendance", "Index")" asp-area="" asp-controller="Attendance" asp-action="Index"><span class="nav-icon">&#128197;</span> Attendance</a></li>
-            <li><a class="nav-link @ActiveClass("", "Payroll", "Index")" asp-area="" asp-controller="Payroll" asp-action="Index"><span class="nav-icon">&#128176;</span> Payroll</a></li>
+            @if (isAdmin || User.IsInRole(ApplicationRoles.HrPayroll))
+            {
+                <li><a class="nav-link @ActiveClass("", "Payroll", "Index")" asp-area="" asp-controller="Payroll" asp-action="Index"><span class="nav-icon">&#128176;</span> Payroll</a></li>
+            }
         }
     }
 
-    @if (isStaff && (User.IsInRole(ApplicationRoles.Administrator) || User.IsInRole(ApplicationRoles.InventoryStaff) ||
-                     User.IsInRole(ApplicationRoles.HrPayroll) || User.IsInRole(ApplicationRoles.Pharmacist)))
+    @if (isStaff && (isAdmin || User.IsInRole(ApplicationRoles.BranchManager) ||
+                     User.IsInRole(ApplicationRoles.InventoryStaff) || User.IsInRole(ApplicationRoles.HrPayroll) || User.IsInRole(ApplicationRoles.Pharmacist)))
     {
         var unreadCount = await NotificationServiceForBadge.GetUnreadCountAsync();
         <li class="app-sidebar-section">System</li>

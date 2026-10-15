@@ -24,13 +24,19 @@ public class HomeController(IStaffHomeService staffHomeService) : Controller
         var branchIdClaim = User.FindFirstValue(ApplicationUserClaimsPrincipalFactory.BranchIdClaimType);
         int? branchId = int.TryParse(branchIdClaim, out var parsedBranchId) ? parsedBranchId : null;
 
+        var isSuperAdmin = User.IsInRole(ApplicationRoles.SuperAdmin);
+        var isAdministrator = User.IsInRole(ApplicationRoles.Administrator);
+        var isBranchManager = User.IsInRole(ApplicationRoles.BranchManager);
+
         var summary = await staffHomeService.GetSummaryAsync(
-            isAdministrator: User.IsInRole(ApplicationRoles.Administrator),
+            isAdministrator: isAdministrator,
             isCashier: User.IsInRole(ApplicationRoles.Cashier),
             isInventoryStaff: User.IsInRole(ApplicationRoles.InventoryStaff),
             isPharmacist: User.IsInRole(ApplicationRoles.Pharmacist),
             isHrPayroll: User.IsInRole(ApplicationRoles.HrPayroll),
-            branchId: branchId);
+            branchId: branchId,
+            isBranchManager: isBranchManager,
+            isSuperAdmin: isSuperAdmin);
 
         summary.DisplayName = User.FindFirstValue(ClaimTypes.GivenName) ?? User.Identity?.Name ?? "there";
 

@@ -8,7 +8,7 @@ using FarmaciaSmart.Web.Services.Interfaces;
 
 namespace FarmaciaSmart.Web.Controllers;
 
-[Authorize(Roles = ApplicationRoles.Administrator)]
+[Authorize(Roles = ApplicationRoles.AdminOrSuper)]
 public class BranchController(
     IBranchService branchService,
     IAuditLogService auditLogService,

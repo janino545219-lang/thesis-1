@@ -5,7 +5,7 @@ using FarmaciaSmart.Web.Services.Interfaces;
 
 namespace FarmaciaSmart.Web.Controllers;
 
-[Authorize(Roles = ApplicationRoles.Administrator)]
+[Authorize(Roles = ApplicationRoles.AdminOrSuper)]
 public class AuditLogController(IAuditLogService auditLogService) : Controller
 {
     public async Task<IActionResult> Index(int page = 1)

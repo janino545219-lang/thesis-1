@@ -6,7 +6,7 @@ using FarmaciaSmart.Web.Services.Interfaces;
 
 namespace FarmaciaSmart.Web.Controllers;
 
-[Authorize(Roles = ApplicationRoles.Administrator)]
+[Authorize(Roles = $"{ApplicationRoles.AdminOrSuper},{ApplicationRoles.BranchManager},{ApplicationRoles.Pharmacist}")]
 public class AnalyticsController(IAnalyticsService analyticsService) : Controller
 {
     public async Task<IActionResult> Index()

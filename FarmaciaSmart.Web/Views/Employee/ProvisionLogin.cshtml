@@ -1,0 +1,112 @@
+@using FarmaciaSmart.Web.Helpers
+@model FarmaciaSmart.Web.Models.ViewModels.Employees.ProvisionLoginViewModel
+@{
+    ViewData["Title"] = $"Provision Login - {Model.EmployeeName}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-navy mb-1">Provision Staff Login</h2>
+        <p class="text-muted small mb-0">Create system login credentials for employee: <strong>@Model.EmployeeName</strong></p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">&larr; Back to Employees</a>
+</div>
+
+<div class="card p-4 border-0 shadow-sm" style="max-width: 680px; border-radius: 14px; background: #ffffff;">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
+
+    <form asp-action="ProvisionLogin" method="post" id="provisionLoginForm" novalidate>
+        <input type="hidden" asp-for="EmployeeId" />
+
+        <div class="alert alert-light border d-flex align-items-center gap-3 mb-4">
+            <span class="fs-2">&#128100;</span>
+            <div>
+                <h6 class="fw-bold mb-0">@Model.EmployeeName</h6>
+                <div class="small text-muted">@Model.Position &middot; Branch: <strong>@Model.BranchName</strong></div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label fw-semibold">Work Email / Login Username <span class="text-danger">*</span></label>
+            <input asp-for="Email" type="email" class="form-control" placeholder="employee@farmaciasanantonio.ph" required />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+            <div class="form-text">The employee will use this email address to log in to the system.</div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Role" class="form-label fw-semibold">Assigned Staff Role <span class="text-danger">*</span></label>
+            <select asp-for="Role" class="form-select" required>
+                <option value="@ApplicationRoles.Cashier">Cashier (POS Transactions)</option>
+                <option value="@ApplicationRoles.Pharmacist">Pharmacist (Clinical / Rx Reviews / POS)</option>
+                <option value="@ApplicationRoles.BranchManager">Branch Manager (Branch Operations)</option>
+                <option value="@ApplicationRoles.InventoryStaff">Inventory Staff (Stock In &amp; Audits)</option>
+                <option value="@ApplicationRoles.HrPayroll">HR &amp; Payroll Staff</option>
+                <option value="@ApplicationRoles.Administrator">Administrator (Owner / Full Access)</option>
+            </select>
+            <span asp-validation-for="Role" class="text-danger small"></span>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+                <label asp-for="Password" class="form-label fw-semibold">Temporary Password <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <input asp-for="Password" type="password" class="form-control" id="provPassword" placeholder="Min. 6 chars (e.g. Staff123!)" required />
+                    <button type="button" class="btn btn-outline-secondary" id="toggleProvPass" aria-label="Toggle password">
+                        <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <div class="col-12 col-md-6">
+                <label asp-for="ConfirmPassword" class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" id="provConfirmPassword" placeholder="Re-enter password" required />
+                    <button type="button" class="btn btn-outline-secondary" id="toggleProvConfirmPass" aria-label="Toggle confirm password">
+                        <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                    </button>
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary px-4 fw-semibold" id="provSubmitBtn">
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display:none;" id="provSpinner"></span>
+                Provision Staff Credentials
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            'use strict';
+            function setupToggle(btnId, inputId) {
+                var btn = document.getElementById(btnId);
+                var input = document.getElementById(inputId);
+                if (btn && input) {
+                    btn.addEventListener('click', function () {
+                        var isPass = input.getAttribute('type') === 'password';
+                        input.setAttribute('type', isPass ? 'text' : 'password');
+                    });
+                }
+            }
+            setupToggle('toggleProvPass', 'provPassword');
+            setupToggle('toggleProvConfirmPass', 'provConfirmPassword');
+
+            var form = document.getElementById('provisionLoginForm');
+            var btn = document.getElementById('provSubmitBtn');
+            var spinner = document.getElementById('provSpinner');
+            if (form && btn && spinner) {
+                form.addEventListener('submit', function () {
+                    if (form.checkValidity && !form.checkValidity()) return;
+                    btn.setAttribute('disabled', 'disabled');
+                    spinner.style.display = 'inline-block';
+                });
+            }
+        })();
+    </script>
+}

@@ -9,10 +9,10 @@ namespace FarmaciaSmart.Web.Services;
 public class EmployeeService(ApplicationDbContext context) : IEmployeeService
 {
     public async Task<List<Employee>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await context.Employees.Include(e => e.Branch).OrderBy(e => e.LastName).ToListAsync(cancellationToken);
+        await context.Employees.Include(e => e.Branch).Include(e => e.User).OrderBy(e => e.LastName).ToListAsync(cancellationToken);
 
     public async Task<Employee?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
-        await context.Employees.Include(e => e.Branch).FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+        await context.Employees.Include(e => e.Branch).Include(e => e.User).FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
 
     public async Task<(bool Succeeded, string? Error)> CreateAsync(EmployeeViewModel model, CancellationToken cancellationToken = default)
     {
@@ -32,7 +32,8 @@ public class EmployeeService(ApplicationDbContext context) : IEmployeeService
             ContactNumber = model.ContactNumber,
             Email = model.Email,
             HireDate = model.HireDate,
-            MonthlySalary = model.MonthlySalary
+            MonthlySalary = model.MonthlySalary,
+            UserId = model.UserId
         });
 
         await context.SaveChangesAsync(cancellationToken);
@@ -62,6 +63,10 @@ public class EmployeeService(ApplicationDbContext context) : IEmployeeService
         employee.Email = model.Email;
         employee.HireDate = model.HireDate;
         employee.MonthlySalary = model.MonthlySalary;
+        if (!string.IsNullOrEmpty(model.UserId))
+        {
+            employee.UserId = model.UserId;
+        }
         employee.UpdatedAt = DateTime.UtcNow;
 
         await context.SaveChangesAsync(cancellationToken);

@@ -102,4 +102,52 @@ public class ValidationTests
 
         Assert.Contains(Validate(model), r => r.MemberNames.Contains(nameof(StockInViewModel.BatchNumber)));
     }
+
+    [Fact]
+    public void StaffRegisterViewModel_ValidModel_HasNoErrors()
+    {
+        var model = new FarmaciaSmart.Web.Models.ViewModels.Account.StaffRegisterViewModel
+        {
+            FirstName = "Maria",
+            LastName = "Santos",
+            Email = "maria@farmaciasmart.ph",
+            Role = FarmaciaSmart.Web.Helpers.ApplicationRoles.Pharmacist,
+            Password = "Password123!",
+            ConfirmPassword = "Password123!"
+        };
+
+        Assert.Empty(Validate(model));
+    }
+
+    [Fact]
+    public void StaffRegisterViewModel_PasswordMismatch_FailsValidation()
+    {
+        var model = new FarmaciaSmart.Web.Models.ViewModels.Account.StaffRegisterViewModel
+        {
+            FirstName = "Maria",
+            LastName = "Santos",
+            Email = "maria@farmaciasmart.ph",
+            Role = FarmaciaSmart.Web.Helpers.ApplicationRoles.Cashier,
+            Password = "Password123!",
+            ConfirmPassword = "DifferentPassword123!"
+        };
+
+        Assert.Contains(Validate(model), r => r.MemberNames.Contains(nameof(FarmaciaSmart.Web.Models.ViewModels.Account.StaffRegisterViewModel.ConfirmPassword)));
+    }
+
+    [Fact]
+    public void StaffRegisterViewModel_ShortPassword_FailsValidation()
+    {
+        var model = new FarmaciaSmart.Web.Models.ViewModels.Account.StaffRegisterViewModel
+        {
+            FirstName = "Maria",
+            LastName = "Santos",
+            Email = "maria@farmaciasmart.ph",
+            Role = FarmaciaSmart.Web.Helpers.ApplicationRoles.InventoryStaff,
+            Password = "short",
+            ConfirmPassword = "short"
+        };
+
+        Assert.Contains(Validate(model), r => r.MemberNames.Contains(nameof(FarmaciaSmart.Web.Models.ViewModels.Account.StaffRegisterViewModel.Password)));
+    }
 }

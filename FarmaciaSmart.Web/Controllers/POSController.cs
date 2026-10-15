@@ -10,7 +10,7 @@ using FarmaciaSmart.Web.Services.Interfaces;
 
 namespace FarmaciaSmart.Web.Controllers;
 
-[Authorize(Roles = $"{ApplicationRoles.Administrator},{ApplicationRoles.Cashier}")]
+[Authorize(Roles = $"{ApplicationRoles.AdminOrSuper},{ApplicationRoles.BranchManager},{ApplicationRoles.Cashier},{ApplicationRoles.Pharmacist}")]
 public class POSController(
     ICartService cartService,
     IPosService posService,

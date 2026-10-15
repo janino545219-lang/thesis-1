@@ -1,0 +1,144 @@
+@using FarmaciaSmart.Web.Helpers
+@model FarmaciaSmart.Web.Models.ViewModels.Users.UserIndexViewModel
+@{
+    ViewData["Title"] = "Manage Users & Roles - Farmacia San Antonio";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary text-uppercase px-2 py-1">Super Admin &middot; Security</span>
+            <span class="text-muted small">ACM Use Case: Manage Users &amp; Roles</span>
+        </div>
+        <h2 class="fw-bold text-navy mb-0">System Users &amp; Access Roles</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Create" class="btn btn-primary fw-semibold">
+            + Provision New User
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+        <span>&#10003;</span>
+        <span>@success</span>
+    </div>
+}
+
+<!-- FILTER & SEARCH BAR -->
+<div class="card p-3 mb-4 border-0 shadow-sm" style="border-radius: 12px; background: #ffffff;">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-12 col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">&#128269;</span>
+                <input type="text" name="search" class="form-control border-start-0" placeholder="Search by name or email..." value="@Model.SearchTerm" />
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <select name="roleFilter" class="form-select" onchange="this.form.submit()">
+                <option value="">-- All Roles (@Model.TotalUsers) --</option>
+                <option value="@ApplicationRoles.SuperAdmin" selected="@(Model.SelectedRole == ApplicationRoles.SuperAdmin)">Super Admin</option>
+                <option value="@ApplicationRoles.Administrator" selected="@(Model.SelectedRole == ApplicationRoles.Administrator)">Administrator (Owner)</option>
+                <option value="@ApplicationRoles.BranchManager" selected="@(Model.SelectedRole == ApplicationRoles.BranchManager)">Branch Manager</option>
+                <option value="@ApplicationRoles.Pharmacist" selected="@(Model.SelectedRole == ApplicationRoles.Pharmacist)">Pharmacist</option>
+                <option value="@ApplicationRoles.Cashier" selected="@(Model.SelectedRole == ApplicationRoles.Cashier)">Cashier</option>
+                <option value="@ApplicationRoles.InventoryStaff" selected="@(Model.SelectedRole == ApplicationRoles.InventoryStaff)">Inventory Staff</option>
+                <option value="@ApplicationRoles.HrPayroll" selected="@(Model.SelectedRole == ApplicationRoles.HrPayroll)">HR &amp; Payroll</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-outline-primary flex-fill">Apply Filter</button>
+            @if (!string.IsNullOrEmpty(Model.SearchTerm) || !string.IsNullOrEmpty(Model.SelectedRole))
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+            }
+        </div>
+    </form>
+</div>
+
+<!-- USERS TABLE -->
+<div class="card p-3 border-0 shadow-sm" style="border-radius: 14px; background: #ffffff;">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="fw-bold">User Identity</th>
+                    <th class="fw-bold">Assigned Role</th>
+                    <th class="fw-bold">Branch Assignment</th>
+                    <th class="fw-bold">Account Status</th>
+                    <th class="fw-bold">Created Date</th>
+                    <th class="text-end fw-bold">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Users.Count == 0)
+            {
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">
+                        No system users found matching the filter criteria.
+                    </td>
+                </tr>
+            }
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>
+                        <div class="fw-bold text-navy">@user.FullName</div>
+                        <div class="small text-muted font-monospace">@user.Email</div>
+                    </td>
+                    <td>
+                        @switch (user.Role)
+                        {
+                            case ApplicationRoles.SuperAdmin:
+                                <span class="badge bg-danger text-uppercase px-2 py-1">Super Admin</span>
+                                break;
+                            case ApplicationRoles.Administrator:
+                                <span class="badge bg-primary text-uppercase px-2 py-1">Admin / Owner</span>
+                                break;
+                            case ApplicationRoles.BranchManager:
+                                <span class="badge bg-info text-dark px-2 py-1">Branch Manager</span>
+                                break;
+                            case ApplicationRoles.Pharmacist:
+                                <span class="badge bg-success px-2 py-1">Pharmacist</span>
+                                break;
+                            case ApplicationRoles.Cashier:
+                                <span class="badge bg-warning text-dark px-2 py-1">Cashier</span>
+                                break;
+                            default:
+                                <span class="badge bg-secondary px-2 py-1">@user.Role</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        @(string.IsNullOrEmpty(user.BranchName) ? "Global / Multi-Branch" : user.BranchName)
+                    </td>
+                    <td>
+                        @if (user.IsActive)
+                        {
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">Suspended</span>
+                        }
+                    </td>
+                    <td class="small text-muted">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-1">
+                            <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary py-1 px-2">Edit Role</a>
+                            <form asp-action="ToggleStatus" asp-route-id="@user.Id" method="post" class="d-inline" onsubmit="return confirm('Change status for this account?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm @(user.IsActive ? "btn-outline-danger" : "btn-outline-success") py-1 px-2">
+                                    @(user.IsActive ? "Suspend" : "Activate")
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

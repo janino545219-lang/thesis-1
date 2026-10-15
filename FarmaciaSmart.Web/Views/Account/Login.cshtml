@@ -1,3 +1,4 @@
+@using FarmaciaSmart.Web.Helpers
 @model FarmaciaSmart.Web.Models.ViewModels.Account.LoginViewModel
 @{
     ViewData["Title"] = "Staff Login - Farmacia San Antonio";
@@ -11,23 +12,23 @@
             <partial name="_Logo" view-data='@(new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 36 }, { "href", "/" } })' />
         </div>
         <div class="auth-visual-content">
-            <h2 class="auth-visual-heading">Your Pharmacy, Online.</h2>
+            <h2 class="auth-visual-heading">Staff Operations Portal</h2>
             <ul class="auth-feature-list">
                 <li class="auth-feature-item">
                     <span class="auth-feature-icon">&#10003;</span>
-                    <span>Browse pharmacy products</span>
+                    <span>Point of Sale &amp; transactions</span>
                 </li>
                 <li class="auth-feature-item">
                     <span class="auth-feature-icon">&#10003;</span>
-                    <span>View branch availability</span>
+                    <span>Multi-branch inventory control</span>
                 </li>
                 <li class="auth-feature-item">
                     <span class="auth-feature-icon">&#10003;</span>
-                    <span>Track preorder requests</span>
+                    <span>Prescription &amp; clinical reviews</span>
                 </li>
                 <li class="auth-feature-item">
                     <span class="auth-feature-icon">&#10003;</span>
-                    <span>Access your account securely</span>
+                    <span>Secure role-based access</span>
                 </li>
             </ul>
             <div class="auth-visual-tagline">
@@ -36,7 +37,7 @@
         </div>
     </div>
 
-    <!-- RIGHT SIDE: Staff Login Form -->
+    <!-- RIGHT SIDE: Staff Login Form Only (No Public Sign Up) -->
     <div class="auth-form-side">
         <!-- Account-Type Selector -->
         <div class="auth-audience-switch" role="group" aria-label="Account Type">
@@ -44,9 +45,17 @@
             <span class="auth-audience-pill active">Staff</span>
         </div>
 
+        @if (TempData["Success"] is string successMsg)
+        {
+            <div class="alert alert-success auth-alert d-flex align-items-center gap-2 mb-3" role="alert">
+                <span>&#10003;</span>
+                <span>@successMsg</span>
+            </div>
+        }
+
         <div class="auth-heading">
-            <h2>Welcome Back</h2>
-            <p>Sign in with your authorized staff credentials.</p>
+            <h2>Staff Sign In</h2>
+            <p>Sign in with your authorized staff credentials to continue.</p>
         </div>
 
         <div asp-validation-summary="ModelOnly" class="alert alert-danger auth-alert" role="alert"></div>
@@ -55,10 +64,11 @@
             <input type="hidden" asp-for="ReturnUrl" />
             
             <div class="mb-3">
-                <label asp-for="Email" class="form-label">Email Address</label>
+                <label asp-for="Email" class="form-label">Work Email Address</label>
                 <input asp-for="Email" 
                        type="email"
                        class="form-control" 
+                       id="staffLoginEmailInput"
                        autocomplete="username" 
                        placeholder="staff@farmaciasanantonio.ph" 
                        required />
@@ -98,7 +108,12 @@
             </button>
         </form>
 
-        <p class="auth-footer-link">
+        <div class="alert alert-light border small text-muted mt-4 mb-0 text-center">
+            <span class="fw-semibold d-block text-dark mb-1">Authorized Access Only</span>
+            Staff accounts are provisioned exclusively by the Pharmacy Owner / Administrator. If you require credentials, please contact management.
+        </div>
+
+        <p class="auth-footer-link mt-3 mb-0">
             Customer looking to place pre-orders?
             <a asp-area="CustomerPortal" asp-controller="Account" asp-action="Login">Go to Customer Login</a>
         </p>
@@ -110,25 +125,23 @@
     <script>
         (function () {
             'use strict';
-            // Show/hide password
-            var toggleBtn = document.getElementById('toggleStaffPasswordBtn');
+
+            // Password visibility toggle
+            var btnToggle = document.getElementById('toggleStaffPasswordBtn');
             var passwordInput = document.getElementById('staffPasswordInput');
-            if (toggleBtn && passwordInput) {
-                toggleBtn.addEventListener('click', function () {
+            if (btnToggle && passwordInput) {
+                btnToggle.addEventListener('click', function () {
                     var isPassword = passwordInput.getAttribute('type') === 'password';
                     passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
                 });
             }
 
-            // Submit loading indicator & prevent duplicate submission
+            // Submit loading spinner
             var form = document.getElementById('staffLoginForm');
             var submitBtn = document.getElementById('staffLoginSubmitBtn');
             if (form && submitBtn) {
-                form.addEventListener('submit', function (e) {
+                form.addEventListener('submit', function () {
                     if (form.checkValidity && !form.checkValidity()) {
-                        return;
-                    }
-                    if ($(form).valid && !$(form).valid()) {
                         return;
                     }
                     submitBtn.classList.add('is-submitting');

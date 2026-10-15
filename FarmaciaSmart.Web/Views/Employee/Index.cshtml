@@ -1,59 +1,101 @@
+@using FarmaciaSmart.Web.Models.Entities
 @model List<Employee>
 @{
-    ViewData["Title"] = "Employees";
+    ViewData["Title"] = "Employees - Farmacia San Antonio";
 }
 
-<h2>Employees</h2>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h2 class="fw-bold text-navy mb-1">Staff &amp; Employee Directory</h2>
+        <p class="text-muted small mb-0">Manage pharmacy staff records, assigned branches, and system login credentials.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Create" class="btn btn-primary fw-semibold">
+            + Create New Employee
+        </a>
+    </div>
+</div>
 
 @if (TempData["Success"] is string success)
 {
-    <div class="alert alert-success">@success</div>
+    <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+        <span>&#10003;</span>
+        <span>@success</span>
+    </div>
 }
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New Employee</a>
-</p>
-
-<div class="table-responsive">
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Branch</th>
-            <th>Status</th>
-            <th>Hire Date</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var employee in Model)
-    {
-        <tr>
-            <td>@employee.FirstName @employee.LastName</td>
-            <td>@employee.Position</td>
-            <td>@employee.Branch.Name</td>
-            <td>
-                @switch (employee.EmploymentStatus)
-                {
-                    case EmploymentStatus.Active:
-                        <span class="badge bg-success">Active</span>
-                        break;
-                    case EmploymentStatus.OnLeave:
-                        <span class="badge bg-warning text-dark">On Leave</span>
-                        break;
-                    case EmploymentStatus.Terminated:
-                        <span class="badge bg-secondary">Terminated</span>
-                        break;
-                }
-            </td>
-            <td>@employee.HireDate.ToString("d")</td>
-            <td>
-                <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-secondary">Details</a>
-                <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+<div class="card p-3 border-0 shadow-sm" style="border-radius: 14px; background: #ffffff;">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="fw-bold">Employee Name</th>
+                    <th class="fw-bold">Position</th>
+                    <th class="fw-bold">Branch</th>
+                    <th class="fw-bold">Status</th>
+                    <th class="fw-bold">System Login Account</th>
+                    <th class="fw-bold">Hire Date</th>
+                    <th class="text-end fw-bold">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">
+                        No employee records found. Click "+ Create New Employee" above to add one.
+                    </td>
+                </tr>
+            }
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>
+                        <div class="fw-bold text-navy">@employee.FirstName @employee.LastName</div>
+                        <small class="text-muted">@(employee.Email ?? employee.ContactNumber ?? "No contact details")</small>
+                    </td>
+                    <td><span class="badge bg-light text-dark border">@employee.Position</span></td>
+                    <td>@employee.Branch?.Name</td>
+                    <td>
+                        @switch (employee.EmploymentStatus)
+                        {
+                            case EmploymentStatus.Active:
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">Active</span>
+                                break;
+                            case EmploymentStatus.OnLeave:
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle">On Leave</span>
+                                break;
+                            case EmploymentStatus.Terminated:
+                                <span class="badge bg-secondary">Terminated</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        @if (employee.User != null || !string.IsNullOrEmpty(employee.UserId))
+                        {
+                            <span class="badge bg-success text-white px-2 py-1">
+                                &#10003; Active Account
+                            </span>
+                            @if (employee.User != null)
+                            {
+                                <div class="small text-muted mt-1 font-monospace">@employee.User.UserName</div>
+                            }
+                        }
+                        else
+                        {
+                            <a asp-action="ProvisionLogin" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold">
+                                + Create Login
+                            </a>
+                        }
+                    </td>
+                    <td>@employee.HireDate.ToString("MMM dd, yyyy")</td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                        <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 </div>

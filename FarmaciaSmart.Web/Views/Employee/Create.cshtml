@@ -1,70 +1,226 @@
+@using FarmaciaSmart.Web.Helpers
 @model FarmaciaSmart.Web.Models.ViewModels.Employees.EmployeeViewModel
 @{
-    ViewData["Title"] = "Create Employee";
+    ViewData["Title"] = "Create Employee - Farmacia San Antonio";
 }
 
-<h2>Create Employee</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-navy mb-1">Create Employee</h2>
+        <p class="text-muted small mb-0">Add an employee profile and optionally provision their system login credentials.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">&larr; Back to Employees</a>
+</div>
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<form asp-action="Create" method="post">
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label asp-for="FirstName" class="form-label"></label>
-            <input asp-for="FirstName" class="form-control" />
-            <span asp-validation-for="FirstName" class="text-danger"></span>
+<div class="card p-4 border-0 shadow-sm" style="border-radius: 14px; background: #ffffff;">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" role="alert"></div>
+
+    <form asp-action="Create" method="post" id="createEmployeeForm" novalidate>
+        <h5 class="fw-bold text-navy mb-3 pb-2 border-bottom">1. Employee Personal &amp; Employment Details</h5>
+
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <label asp-for="FirstName" class="form-label fw-semibold">First name <span class="text-danger">*</span></label>
+                <input asp-for="FirstName" class="form-control" placeholder="Maria" required />
+                <span asp-validation-for="FirstName" class="text-danger small"></span>
+            </div>
+            <div class="col-12 col-md-6">
+                <label asp-for="LastName" class="form-label fw-semibold">Last name <span class="text-danger">*</span></label>
+                <input asp-for="LastName" class="form-control" placeholder="Santos" required />
+                <span asp-validation-for="LastName" class="text-danger small"></span>
+            </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <label asp-for="LastName" class="form-label"></label>
-            <input asp-for="LastName" class="form-control" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
+
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-md-6">
+                <label asp-for="Position" class="form-label fw-semibold">Position <span class="text-danger">*</span></label>
+                <input asp-for="Position" class="form-control" placeholder="e.g. Pharmacist, Cashier, Branch Manager" required />
+                <span asp-validation-for="Position" class="text-danger small"></span>
+            </div>
+            <div class="col-12 col-md-6">
+                <label asp-for="BranchId" class="form-label fw-semibold">Assigned Branch <span class="text-danger">*</span></label>
+                <select asp-for="BranchId" class="form-select" asp-items="@(new SelectList(Model.Branches, "Id", "Name"))" required>
+                    <option value="">-- Select branch --</option>
+                </select>
+                <span asp-validation-for="BranchId" class="text-danger small"></span>
+            </div>
         </div>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Position" class="form-label"></label>
-        <input asp-for="Position" class="form-control" />
-        <span asp-validation-for="Position" class="text-danger"></span>
-    </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label asp-for="BranchId" class="form-label"></label>
-            <select asp-for="BranchId" class="form-select" asp-items="@(new SelectList(Model.Branches, "Id", "Name"))">
-                <option value="">-- Select branch --</option>
-            </select>
-            <span asp-validation-for="BranchId" class="text-danger"></span>
+
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-md-6">
+                <label asp-for="EmploymentStatus" class="form-label fw-semibold">Employment status</label>
+                <select asp-for="EmploymentStatus" class="form-select" asp-items="Html.GetEnumSelectList<FarmaciaSmart.Web.Models.Entities.EmploymentStatus>()"></select>
+            </div>
+            <div class="col-12 col-md-6">
+                <label asp-for="ContactNumber" class="form-label fw-semibold">Contact number</label>
+                <input asp-for="ContactNumber" class="form-control" placeholder="+63 912 345 6789" />
+                <span asp-validation-for="ContactNumber" class="text-danger small"></span>
+            </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <label asp-for="EmploymentStatus" class="form-label"></label>
-            <select asp-for="EmploymentStatus" class="form-select" asp-items="Html.GetEnumSelectList<EmploymentStatus>()"></select>
+
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-md-6">
+                <label asp-for="Email" class="form-label fw-semibold">Work Email Address</label>
+                <input asp-for="Email" type="email" class="form-control" id="employeeEmailInput" placeholder="maria.santos@farmaciasanantonio.ph" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+                <div class="form-text">Required if provisioning a system login account.</div>
+            </div>
+            <div class="col-12 col-md-3">
+                <label asp-for="HireDate" class="form-label fw-semibold">Hire date</label>
+                <input asp-for="HireDate" class="form-control" type="date" />
+                <span asp-validation-for="HireDate" class="text-danger small"></span>
+            </div>
+            <div class="col-12 col-md-3">
+                <label asp-for="MonthlySalary" class="form-label fw-semibold">Monthly salary (&#8369;)</label>
+                <input asp-for="MonthlySalary" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                <span asp-validation-for="MonthlySalary" class="text-danger small"></span>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label asp-for="ContactNumber" class="form-label"></label>
-            <input asp-for="ContactNumber" class="form-control" />
-            <span asp-validation-for="ContactNumber" class="text-danger"></span>
+
+        <!-- 2. SYSTEM LOGIN ACCOUNT PROVISIONING SECTION -->
+        <div class="card p-3 my-4 border-primary-subtle bg-light" style="border-radius: 12px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">&#128272;</span>
+                    <div>
+                        <h5 class="fw-bold text-navy mb-0">System Login Account (Staff Credentials)</h5>
+                        <small class="text-muted">Grant POS and Dashboard operations access according to ACM research role specifications</small>
+                    </div>
+                </div>
+                <div class="form-check form-switch mb-0">
+                    <input asp-for="CreateLoginAccount" class="form-check-input" type="checkbox" id="toggleLoginFields" style="width: 2.5em; height: 1.25em; cursor: pointer;" />
+                </div>
+            </div>
+
+            <div id="loginAccountFields" style="@(Model.CreateLoginAccount ? "" : "display:none;")" class="pt-3 border-top mt-2">
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="SystemRole" class="form-label fw-semibold">Assigned Staff Role <span class="text-danger">*</span></label>
+                        <select asp-for="SystemRole" class="form-select" id="roleSelect">
+                            <option value="@ApplicationRoles.Cashier">Cashier (Point of Sale Checkout)</option>
+                            <option value="@ApplicationRoles.Pharmacist">Pharmacist (Clinical / Rx Review / POS)</option>
+                            <option value="@ApplicationRoles.BranchManager">Branch Manager (Branch Operations &amp; Inventory)</option>
+                            <option value="@ApplicationRoles.InventoryStaff">Inventory Staff (Stock In &amp; Transfer)</option>
+                            <option value="@ApplicationRoles.HrPayroll">HR &amp; Payroll Staff</option>
+                            <option value="@ApplicationRoles.Administrator">Administrator (Owner / Full System Access)</option>
+                        </select>
+                        <span asp-validation-for="SystemRole" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Login Username</label>
+                        <input type="text" class="form-control bg-white" id="loginUsernameDisplay" readonly value="@Model.Email" placeholder="Uses work email above" />
+                        <div class="form-text">The staff member will use this email address to log in.</div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="LoginPassword" class="form-label fw-semibold">Initial Password <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input asp-for="LoginPassword" type="password" class="form-control" id="empLoginPassword" placeholder="Minimum 6 characters (e.g. Staff123!)" />
+                            <button type="button" class="btn btn-outline-secondary" id="toggleEmpPassBtn" aria-label="Toggle password">
+                                <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                            </button>
+                        </div>
+                        <span asp-validation-for="LoginPassword" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="ConfirmLoginPassword" class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input asp-for="ConfirmLoginPassword" type="password" class="form-control" id="empLoginConfirmPassword" placeholder="Re-enter password" />
+                            <button type="button" class="btn btn-outline-secondary" id="toggleEmpConfirmPassBtn" aria-label="Toggle confirm password">
+                                <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                            </button>
+                        </div>
+                        <span asp-validation-for="ConfirmLoginPassword" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <label asp-for="Email" class="form-label"></label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary px-4 fw-semibold" id="submitBtn">
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display:none;" id="submitSpinner"></span>
+                Create Employee &amp; Save
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label asp-for="HireDate" class="form-label"></label>
-            <input asp-for="HireDate" class="form-control" />
-            <span asp-validation-for="HireDate" class="text-danger"></span>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label asp-for="MonthlySalary" class="form-label"></label>
-            <input asp-for="MonthlySalary" class="form-control" type="number" step="0.01" />
-            <span asp-validation-for="MonthlySalary" class="text-danger"></span>
-        </div>
-    </div>
-    <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            'use strict';
+
+            var toggleCheckbox = document.getElementById('toggleLoginFields');
+            var loginFields = document.getElementById('loginAccountFields');
+            var emailInput = document.getElementById('employeeEmailInput');
+            var usernameDisplay = document.getElementById('loginUsernameDisplay');
+            var positionInput = document.getElementById('Position');
+            var roleSelect = document.getElementById('roleSelect');
+
+            if (toggleCheckbox && loginFields) {
+                toggleCheckbox.addEventListener('change', function () {
+                    loginFields.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+
+            if (emailInput && usernameDisplay) {
+                emailInput.addEventListener('input', function () {
+                    usernameDisplay.value = this.value || 'Uses work email above';
+                });
+            }
+
+            // Auto-suggest role based on position entered
+            if (positionInput && roleSelect) {
+                positionInput.addEventListener('blur', function () {
+                    var val = (this.value || '').toLowerCase();
+                    if (val.indexOf('pharmacist') !== -1) {
+                        roleSelect.value = '@ApplicationRoles.Pharmacist';
+                    } else if (val.indexOf('manager') !== -1) {
+                        roleSelect.value = '@ApplicationRoles.BranchManager';
+                    } else if (val.indexOf('admin') !== -1 || val.indexOf('owner') !== -1) {
+                        roleSelect.value = '@ApplicationRoles.Administrator';
+                    } else if (val.indexOf('inventory') !== -1 || val.indexOf('stock') !== -1) {
+                        roleSelect.value = '@ApplicationRoles.InventoryStaff';
+                    } else if (val.indexOf('payroll') !== -1 || val.indexOf('hr') !== -1) {
+                        roleSelect.value = '@ApplicationRoles.HrPayroll';
+                    } else if (val.indexOf('cashier') !== -1) {
+                        roleSelect.value = '@ApplicationRoles.Cashier';
+                    }
+                });
+            }
+
+            // Password toggles
+            function setupToggle(btnId, inputId) {
+                var btn = document.getElementById(btnId);
+                var input = document.getElementById(inputId);
+                if (btn && input) {
+                    btn.addEventListener('click', function () {
+                        var isPass = input.getAttribute('type') === 'password';
+                        input.setAttribute('type', isPass ? 'text' : 'password');
+                    });
+                }
+            }
+            setupToggle('toggleEmpPassBtn', 'empLoginPassword');
+            setupToggle('toggleEmpConfirmPassBtn', 'empLoginConfirmPassword');
+
+            // Spinner on submit
+            var form = document.getElementById('createEmployeeForm');
+            var submitBtn = document.getElementById('submitBtn');
+            var spinner = document.getElementById('submitSpinner');
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function () {
+                    if (form.checkValidity && !form.checkValidity()) {
+                        return;
+                    }
+                    submitBtn.setAttribute('disabled', 'disabled');
+                    spinner.style.display = 'inline-block';
+                });
+            }
+        })();
+    </script>
 }

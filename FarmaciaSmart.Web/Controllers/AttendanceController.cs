@@ -10,7 +10,7 @@ using FarmaciaSmart.Web.Services.Interfaces;
 
 namespace FarmaciaSmart.Web.Controllers;
 
-[Authorize(Roles = $"{ApplicationRoles.Administrator},{ApplicationRoles.HrPayroll}")]
+[Authorize(Roles = $"{ApplicationRoles.Administrator},{ApplicationRoles.BranchManager},{ApplicationRoles.HrPayroll}")]
 public class AttendanceController(
     IAttendanceService attendanceService,
     ApplicationDbContext context,

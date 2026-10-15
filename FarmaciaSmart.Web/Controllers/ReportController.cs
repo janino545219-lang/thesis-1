@@ -7,7 +7,7 @@ using FarmaciaSmart.Web.Services.Interfaces;
 
 namespace FarmaciaSmart.Web.Controllers;
 
-[Authorize(Roles = $"{ApplicationRoles.Administrator},{ApplicationRoles.InventoryStaff}")]
+[Authorize(Roles = $"{ApplicationRoles.AdminOrSuper},{ApplicationRoles.BranchManager},{ApplicationRoles.InventoryStaff},{ApplicationRoles.Pharmacist}")]
 public class ReportController(IReportService reportService, ApplicationDbContext context) : Controller
 {
     public async Task<IActionResult> SalesSummary(DateOnly? from, DateOnly? to, int? branchId)

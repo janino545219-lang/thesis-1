@@ -12,7 +12,7 @@ public sealed class LandingContentService : ILandingContentService
     private static readonly IReadOnlyList<TrustItem> TrustItems =
     [
         new("building", "Multi-Branch Inventory & In-Store Pickup"),
-        new("shield-check", "Pharmacist-Reviewed OTC & Health Guidance"),
+        new("sparkles", "AI-Powered, Pharmacist-Reviewed Health Guidance"),
         new("cart", "Convenient Online Medicine Pre-Orders"),
         new("chart", "Real-Time Stock, Batch & Expiry Alerts"),
     ];
@@ -29,7 +29,7 @@ public sealed class LandingContentService : ILandingContentService
     private static readonly IReadOnlyList<FeatureItem> Features =
     [
         new("building", "Multi-Branch Inventory Management", "Unified stock control and batch visibility across all Farmacia San Antonio locations.", "#features"),
-        new("shield-check", "Pharmacist-Reviewed Recommendations", "Explore pharmacist-verified OTC suggestions with certified professional oversight.", "#features"),
+        new("sparkles", "AI-Powered OTC Recommendations", "Explore intelligent, pharmacist-verified OTC suggestions and chatbot guidance tailored to your health symptoms.", "/CustomerPortal/Recommendation"),
         new("cart", "Online Pre-Orders and In-Store Pickup", "Browse branch stock in real time, place preorders online, and collect quickly in store.", "#how-it-works"),
         new("chart", "Inventory, Expiry, and Low-Stock Alerts", "Proactive alerts maintain product safety and prevent medicine shortages before they happen.", "#features"),
     ];

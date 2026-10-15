@@ -160,7 +160,7 @@
                     <h6 class="fw-bold mb-0 text-navy">Ask AI Guidance</h6>
                 </div>
                 <p class="text-secondary small flex-grow-1">Get pharmacist-approved OTC recommendations tailored to your wellness needs.</p>
-                <a asp-controller="Recommendation" asp-action="Index" class="btn btn-sm btn-outline-primary w-100">Ask AI</a>
+                <a asp-controller="Recommendation" asp-action="Index" class="btn btn-sm btn-outline-primary w-100" onclick="if(window.FarmaciaChatbot){window.FarmaciaChatbot.open();return false;}">Open AI Chatbot &rarr;</a>
             </div>
         </div>
         <div class="col-12 col-md-4">

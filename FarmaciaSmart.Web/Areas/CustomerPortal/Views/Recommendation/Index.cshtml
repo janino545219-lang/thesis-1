@@ -1,26 +1,93 @@
 @model FarmaciaSmart.Web.Areas.CustomerPortal.Models.ViewModels.RecommendationRequestViewModel
 @{
-    ViewData["Title"] = "Ask AI";
+    ViewData["Title"] = "AI Guidance Assistant - Farmacia San Antonio";
 }
 
-<h2>Get a Recommendation</h2>
-<p class="text-muted">
-    This tool offers preliminary suggestions based on pharmacist-approved guidance. It does not replace
-    professional pharmacist consultation.
-</p>
-
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<form asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Index" method="post">
-    <div class="mb-3">
-        <label asp-for="CategoryId" class="form-label"></label>
-        <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
-            <option value="">-- Select a concern --</option>
-        </select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
+<div class="container-fluid py-3">
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background: linear-gradient(135deg, #172033 0%, #2A3B5C 100%); color: #ffffff;">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div style="max-width: 600px;">
+                <span class="badge mb-2 px-3 py-2 rounded-pill" style="background: rgba(185, 28, 43, 0.9); font-size: 0.82rem;">Pharmacist-Reviewed AI</span>
+                <h2 class="fw-bold mb-2">Interactive AI Guidance Assistant</h2>
+                <p class="mb-0 text-white-50 small">
+                    Get preliminary, pharmacist-approved over-the-counter (OTC) recommendations in seconds. 
+                    Ask about symptoms, budget alternatives, and view real-time branch availability.
+                </p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-light text-navy fw-bold px-4 py-3 rounded-pill shadow-sm" onclick="if(window.FarmaciaChatbot){window.FarmaciaChatbot.open();}">
+                    <span class="me-1">&#129502;</span> Launch AI Chatbot &rarr;
+                </button>
+            </div>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary">Get Recommendation</button>
-</form>
+
+    <div class="row g-4">
+        <!-- Chatbot Highlights -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card p-3 h-100 rounded-3 shadow-sm border-0">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="fs-4">&#128172;</span>
+                    <h6 class="fw-bold mb-0 text-navy">Conversational Chat</h6>
+                </div>
+                <p class="text-secondary small mb-3">Slide out the AI chatbot from any page to describe symptoms or ask questions naturally.</p>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-auto" onclick="if(window.FarmaciaChatbot){window.FarmaciaChatbot.open();}">Open Side Chatbot</button>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card p-3 h-100 rounded-3 shadow-sm border-0">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="fs-4">&#128179;</span>
+                    <h6 class="fw-bold mb-0 text-navy">Instant Cart Integration</h6>
+                </div>
+                <p class="text-secondary small mb-3">Add recommended products directly to your cart right from the chatbot conversation.</p>
+                <a asp-controller="Shop" asp-action="Index" class="btn btn-sm btn-outline-secondary mt-auto">Browse Store</a>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card p-3 h-100 rounded-3 shadow-sm border-0">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="fs-4">&#128337;</span>
+                    <h6 class="fw-bold mb-0 text-navy">Consultation History</h6>
+                </div>
+                <p class="text-secondary small mb-3">View all your previous pharmacist-approved recommendations and doctor guidance.</p>
+                <a asp-action="History" class="btn btn-sm btn-outline-secondary mt-auto">View History</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Form Alternative -->
+    <div class="card mt-4 p-4 rounded-4 shadow-sm border-0">
+        <h5 class="fw-bold text-navy mb-2">Prefer standard form search?</h5>
+        <p class="text-muted small mb-3">Select your health concern to generate suggestions:</p>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+        <form asp-area="CustomerPortal" asp-controller="Recommendation" asp-action="Index" method="post" class="row g-2 align-items-center">
+            <div class="col-12 col-sm-8 col-md-6">
+                <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                    <option value="">-- Select a health concern --</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger small"></span>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3">
+                <button type="submit" class="btn btn-primary w-100">Get Recommendations</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Automatically open the chatbot side panel when customer visits this page
+            setTimeout(function () {
+                if (window.FarmaciaChatbot) {
+                    window.FarmaciaChatbot.open();
+                }
+            }, 400);
+        });
+    </script>
 }

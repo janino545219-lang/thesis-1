@@ -1,0 +1,209 @@
+@using FarmaciaSmart.Web.Helpers
+@model FarmaciaSmart.Web.Models.ViewModels.Account.StaffRegisterViewModel
+@{
+    ViewData["Title"] = "Staff Registration - Farmacia San Antonio";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth-card">
+    <!-- LEFT SIDE: Pharmacy Visual & Feature Highlights -->
+    <div class="auth-visual">
+        <div class="auth-brand-badge">
+            <partial name="_Logo" view-data='@(new ViewDataDictionary(ViewData) { { "variant", "full" }, { "height", 36 }, { "href", "/" } })' />
+        </div>
+        <div class="auth-visual-content">
+            <h2 class="auth-visual-heading">Staff Operations Portal</h2>
+            <ul class="auth-feature-list">
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Point of Sale &amp; transactions</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Multi-branch inventory control</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Prescription &amp; clinical reviews</span>
+                </li>
+                <li class="auth-feature-item">
+                    <span class="auth-feature-icon">&#10003;</span>
+                    <span>Attendance, HR &amp; payroll tracking</span>
+                </li>
+            </ul>
+            <div class="auth-visual-tagline">
+                Integrated Operations &middot; Inventory Synchronization &middot; Audit Logging
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE: Admin Staff Provisioning Form -->
+    <div class="auth-form-side">
+        <div class="mb-2">
+            <span class="badge bg-primary px-2 py-1 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Admin Provisioning Portal</span>
+        </div>
+
+        <div class="auth-heading">
+            <h2>Provision Staff Account</h2>
+            <p>Create authorized employee credentials, role permissions, and branch assignment.</p>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger auth-alert" role="alert"></div>
+
+        <form asp-controller="Account" asp-action="Register" method="post" id="staffRegisterForm" novalidate>
+            <!-- First Name and Last Name Side by Side -->
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="FirstName" class="form-label">First Name</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="Maria" required />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label asp-for="LastName" class="form-label">Last Name</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Santos" required />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- Email Address -->
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Work Email Address</label>
+                <input asp-for="Email" 
+                       type="email" 
+                       class="form-control" 
+                       autocomplete="email" 
+                       placeholder="maria.santos@farmaciasanantonio.ph" 
+                       required />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="mb-3">
+                <label asp-for="ContactNumber" class="form-label">Contact Number</label>
+                <input asp-for="ContactNumber" 
+                       type="tel" 
+                       class="form-control" 
+                       placeholder="+63 912 345 6789" />
+                <span asp-validation-for="ContactNumber" class="text-danger small"></span>
+            </div>
+
+            <!-- Staff Role & Branch Row -->
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="Role" class="form-label">Staff Role</label>
+                    <select asp-for="Role" class="form-select" required>
+                        <option value="@ApplicationRoles.Administrator">Administrator (Full Access)</option>
+                        <option value="@ApplicationRoles.BranchManager">Branch Manager (Per Branch)</option>
+                        <option value="@ApplicationRoles.Pharmacist">Pharmacist</option>
+                        <option value="@ApplicationRoles.Cashier">Cashier (POS)</option>
+                        <option value="@ApplicationRoles.InventoryStaff">Inventory Staff</option>
+                        <option value="@ApplicationRoles.HrPayroll">HR &amp; Payroll</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger small"></span>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label asp-for="BranchId" class="form-label">Assigned Branch</label>
+                    <select asp-for="BranchId" class="form-select">
+                        <option value="">-- All / Multi-Branch --</option>
+                        @foreach (var b in Model.Branches)
+                        {
+                            <option value="@b.Id">@b.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="BranchId" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Password</label>
+                <div class="auth-password-wrapper">
+                    <input asp-for="Password" 
+                           type="password" 
+                           class="form-control" 
+                           id="staffRegPasswordInput"
+                           autocomplete="new-password" 
+                           placeholder="At least 8 characters" 
+                           required />
+                    <button type="button" 
+                            class="btn-toggle-password" 
+                            id="toggleStaffRegPasswordBtn" 
+                            aria-label="Toggle password visibility">
+                        <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                <div class="auth-password-wrapper">
+                    <input asp-for="ConfirmPassword" 
+                           type="password" 
+                           class="form-control" 
+                           id="staffRegConfirmPasswordInput"
+                           autocomplete="new-password" 
+                           placeholder="Re-enter your password" 
+                           required />
+                    <button type="button" 
+                            class="btn-toggle-password" 
+                            id="toggleStaffRegConfirmPasswordBtn" 
+                            aria-label="Toggle password visibility">
+                        <partial name="_LandingIcon" view-data='@(new ViewDataDictionary(ViewData) { { "icon", "eye" } })' />
+                    </button>
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn auth-submit-btn w-100" id="staffRegSubmitBtn">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span class="btn-text">Provision Staff Account</span>
+            </button>
+        </form>
+
+        <p class="auth-footer-link mt-4 mb-0 text-center">
+            <a asp-controller="Home" asp-action="Index" class="text-decoration-none fw-semibold">
+                &larr; Return to Admin Dashboard
+            </a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            'use strict';
+            // Show/hide passwords
+            function setupToggle(btnId, inputId) {
+                var btn = document.getElementById(btnId);
+                var input = document.getElementById(inputId);
+                if (btn && input) {
+                    btn.addEventListener('click', function () {
+                        var isPassword = input.getAttribute('type') === 'password';
+                        input.setAttribute('type', isPassword ? 'text' : 'password');
+                    });
+                }
+            }
+            setupToggle('toggleStaffRegPasswordBtn', 'staffRegPasswordInput');
+            setupToggle('toggleStaffRegConfirmPasswordBtn', 'staffRegConfirmPasswordInput');
+
+            // Submit loading indicator & prevent duplicate submission
+            var form = document.getElementById('staffRegisterForm');
+            var submitBtn = document.getElementById('staffRegSubmitBtn');
+            if (form && submitBtn) {
+                form.addEventListener('submit', function (e) {
+                    if (form.checkValidity && !form.checkValidity()) {
+                        return;
+                    }
+                    if ($(form).valid && !$(form).valid()) {
+                        return;
+                    }
+                    submitBtn.classList.add('is-submitting');
+                    submitBtn.setAttribute('disabled', 'disabled');
+                });
+            }
+        })();
+    </script>
+}

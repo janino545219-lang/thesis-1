@@ -10,7 +10,7 @@ using FarmaciaSmart.Web.Services.Interfaces;
 
 namespace FarmaciaSmart.Web.Controllers;
 
-[Authorize(Roles = $"{ApplicationRoles.Administrator},{ApplicationRoles.InventoryStaff}")]
+[Authorize(Roles = $"{ApplicationRoles.AdminOrSuper},{ApplicationRoles.InventoryStaff},{ApplicationRoles.Pharmacist}")]
 public class PurchaseController(
     IPurchasingService purchasingService,
     ApplicationDbContext context,

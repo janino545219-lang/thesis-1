@@ -12,7 +12,7 @@ namespace FarmaciaSmart.Web.Controllers;
 /// it marks the order as picked up. The actual sale/payment/inventory deduction happens through
 /// the existing POS screen exactly as it would for any other walk-in customer.
 /// </summary>
-[Authorize(Roles = $"{ApplicationRoles.Administrator},{ApplicationRoles.Cashier},{ApplicationRoles.InventoryStaff}")]
+[Authorize(Roles = $"{ApplicationRoles.AdminOrSuper},{ApplicationRoles.BranchManager},{ApplicationRoles.Cashier},{ApplicationRoles.InventoryStaff},{ApplicationRoles.Pharmacist}")]
 public class CustomerOrderController(
     ICustomerOrderService customerOrderService,
     IAuditLogService auditLogService,
